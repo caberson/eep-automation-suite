@@ -2,48 +2,48 @@
 # coding=utf-8
 # -*- coding: utf-8 -*-
 # Copyright (C) 2011 Caber Chu
-
-# d:\_cc\development\Python26\python.exe eep-merge-sheets-from-raw-excel.py 2011f_eep.xls 2
-
-# cd /Users/cc/Projects/eepListFiles/
-# ./eep-generate-lists.py  2011f_eep_combined.xls
-
-# ./eep-merge-sheets-from-raw-excel.py ~/Documents/eep/2011f/2011f_eep.xls 11,12
+"""Merge two sheets in an EEP Excel data file.
 
 
-import xlrd
-import xlwt
-import xlutils
-from xlutils.styles import Styles
-from xlutils.display import quoted_sheet_name
-from xlutils.display import cell_display
-
-import math
-
-from xlutils.copy import copy
-from xlutils.save import save
-
-from xlwt import easyxf
-
-import sys, os
-
-from decimal import *
-
-from datetime import datetime
-import string
-
-import eep_shared
-
-
-
-
-
-# docs
 # http://www.lexicon.net/sjmachin/xlrd.html
 # http://groups.google.com/group/python-excel/browse_thread/thread/23a0b4d6be641755
 # http://www.pythonexcels.com/2009/09/another-xlwt-example/
 # http://www.python-excel.org/
 # https://secure.simplistix.co.uk/svn/xlwt/trunk/xlwt/examples/xlwt_easyxf_simple_demo.py
+
+List out all sheets found in the Excel file.
+>>> ./eep-merge-sheets-from-raw-excel.py ~/Documents/eep/2011f/20114_eep.xls
+
+Merge sheet 11 and 12.  Sheets are 0 based.
+>>> ./eep-merge_sheets-from-raw-excel.py ~/Documents/eep/2011f/20114_eep.xls 11,12
+"""
+# d:\_cc\development\Python26\python.exe eep-merge-sheets-from-raw-excel.py 2011f_eep.xls 2
+
+# cd /Users/cc/Projects/eepListFiles/
+# ./eep-generate-lists.py  2011f_eep_combined.xls
+
+
+# Standard module imports.
+import sys
+import os
+import string
+import math
+from decimal import *
+from datetime import datetime
+
+# 3rd party module imports.
+import xlrd
+import xlwt
+from xlwt import easyxf
+import xlutils
+from xlutils.styles import Styles
+from xlutils.display import quoted_sheet_name
+from xlutils.display import cell_display
+from xlutils.copy import copy
+from xlutils.save import save
+
+import eep_shared
+
 
 #
 # constants
