@@ -3,6 +3,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2011 Caber Chu
 
+import sys
 import os
 import string
 import re
@@ -22,6 +23,10 @@ DESTINATION_DIR = (EEP_ROOT_DIR +
 INSPECTION_DOCUMENTS_DESTINATION_DIR = DESTINATION_DIR + 'documents_inspection/'
 
 STUDENT_NAME_LABELS_DIR = DESTINATION_DIR + 'student_name_labels/'
+
+OUTPUT_ENCODING = 'utf-8'
+if sys.platform == 'win32':
+    OUTPUT_ENCODING = 'big5'
 
 def clean_text(val):
 	#print isinstance(val)
