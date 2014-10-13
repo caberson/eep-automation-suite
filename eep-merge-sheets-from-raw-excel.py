@@ -16,11 +16,6 @@ List out all sheets found in the Excel file.
 Merge sheet 11 and 12.  Sheets are 0 based.
 >>> ./eep-merge_sheets-from-raw-excel.py ~/Documents/eep/2011f/20114_eep.xls 11 12
 """
-# d:\_cc\development\Python26\python.exe eep-merge-sheets-from-raw-excel.py 2011f_eep.xls 2
-
-# cd /Users/cc/Projects/eepListFiles/
-# ./eep-generate-lists.py  2011f_eep_combined.xls
-
 
 # Standard module imports.
 import sys
@@ -50,11 +45,7 @@ from eepsheet import EepSheet
 #
 ROWS_USED_BY_HEADING = 3
 
-STATUS_NORMAL = 0
-STATUS_WARNING = 1
-STATUS_ERROR = 2
-
-# 0 based, these can be moved to eep_shared.py
+# 0 based
 colpos = {
     'region': 1,
     'location': 2,
@@ -89,13 +80,32 @@ COL_COMMENT_TW = 14 #O
 
 
 SHEET_COLUMNS = {
-    'DEFAULT': [COL_REGION, COL_LOCATION, COL_SCHOOL, COL_STUDENT_NAME, COL_SEX, COL_GRADUATION_YEAR, COL_STUDENT_DONOR_ID, COL_STUDENT_DONOR_NAME, COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL, COL_COMMENT],
-    '1': [COL_REGION, COL_LOCATION, COL_SCHOOL, COL_STUDENT_NAME, COL_SEX, COL_GRADUATION_YEAR, COL_STUDENT_DONOR_ID, COL_STUDENT_DONOR_NAME, COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL, COL_COMMENT_TW],
-    }
+    'DEFAULT': [
+        colpos['region'],
+        colpos['location'],
+        colpos['school'],
+        colpos['student_name'],
+        colpos['sex'],
+        colpos['graduation_year'],
+        colpos['student_donor_id'],
+        colpos['student_donor_name'],
+        colpos['student_donor_donation_amount_local'],
+        colpos['comment'],
+    ],
+    '1': [
+        colpos['region'],
+        colpos['location'],
+        colpos['school'],
+        colpos['student_name'],
+        colpos['sex'],
+        colpos['graduation_year'],
+        colpos['student_donor_id'],
+        colpos['student_donor_name'],
+        colpos['student_donor_donation_amount_local'],
+        colpos['comment_tw'],
+    ],
+}
 
-
-excel_row_lo = ROWS_USED_BY_HEADING
-excel_row_hi = 0 # do not hard code this
 
 STYLES = {
     'CHINESE': xlwt.easyxf(u'font: name 宋体;'),
@@ -107,273 +117,242 @@ STYLES = {
     }
 
 
-#
-# create a new file
-#
-def combine_sheets(raw_excel_file, sheets):
-    # open raw excel file to read
-    wb_eep = xlrd.open_workbook(
-        raw_excel_file, on_demand=True, formatting_info=True
-    )
+class EepMergeSheets:
+    STATUS_NORMAL = 0
+    STATUS_WARNING = 1
+    STATUS_ERROR = 2
 
-    # New workbook
-    wb_new = xlwt.Workbook()
-    sh_new = wb_new.add_sheet('final-data')
-    sh_new.portrait = 0
-    
-    column_titles = [
-        'region', 'location', 'school-na', 'student-name', 'sex', 'grad-yr',
-        'donor-id', 'donor-na', 'donate-amt', 'comment', 'ipt_odr_nr',
-        'auto-student-id', 'auto-donor-stu-cnt-id', 'scl-na-len'
-    ]
-    # sheets = combine_sheet_numbers#  [int(x) for x in COMBINE_SHEET_NUMBERS.split(',')]
-    #print sheets
-    
-    current_year = eep_shared.current_year
+    excel_row_lo = ROWS_USED_BY_HEADING
+    excel_row_hi = 0 # do not hard code this
 
-    """
-    style0 = xlwt.easyxf('font: name Times New Roman, color-index red, bold on', num_format_str='#,##0.00')
-    style1 = xlwt.easyxf(num_format_str='D-MMM-YY')
-    ws.write(1, 0, datetime.now(), style1)
-    ws.write(2, 2, xlwt.Formula("A3+B3"))
-    """
     #
-    # create column titles
+    # create a new file
     #
-    for cx, column_title in enumerate(column_titles):
-        sh_new.write(0, cx, column_title)   
-    
-    i = 0
-    total_rows_combined = 0
-    for sheet_count, sheet_index in enumerate(sheets):
-        sh_eep = wb_eep.sheet_by_index(sheet_index)
-        sheet = EepSheet(sh_eep)
-        sheet.colpos = colpos
-        excel_row_hi = sheet.get_sheet_row_hi()
-        total_rows_combined += excel_row_hi - excel_row_lo
-        print 'Sheet: ', sheet_index, ' Rows: ', excel_row_hi
-        
-        # Determine which columns to use.
-        try:
-            columns = SHEET_COLUMNS[str(sheet_count)]
-        except:
-            columns = SHEET_COLUMNS['DEFAULT'];
-
-        # Get all student names first.  Used to check duplicates later.
-        student_names = sheet.col_values(
-            sheet.colpos['student_name'], excel_row_lo, excel_row_hi
+    def combine_sheets(self, raw_excel_file, sheets):
+        # open raw excel file to read
+        wb_eep = xlrd.open_workbook(
+            raw_excel_file, on_demand=True, formatting_info=True
         )
-        # for name in student_names:
-        #    print name
 
-        rng = range(excel_row_lo, excel_row_hi)
-        section_check_cols = [
-            sheet.colpos['region'],
-            sheet.colpos['location'],
-            sheet.colpos['school'],
-            sheet.colpos['student_donor_name']
+        # New workbook
+        wb_new = xlwt.Workbook()
+        sh_new = wb_new.add_sheet('final-data')
+        sh_new.portrait = 0
+        
+        column_titles = [
+            'region', 'location', 'school-na', 'student-name', 'sex', 'grad-yr',
+            'donor-id', 'donor-na', 'donate-amt', 'comment', 'ipt_odr_nr',
+            'auto-student-id', 'auto-donor-stu-cnt-id', 'scl-na-len'
         ]
-        for row_count, rx in enumerate(rng):
-            # +2 because one is for heading and one is for actual cell number.
-            current_actual_excel_row_num = i + 2
-            current_xlwt_excel_row_num = i + 1
-            
-            # import order id
-            sh_new.write(current_xlwt_excel_row_num, len(columns) + 0, i + 1)
-            
-            # auto student id
-            formula = 'COUNTIF(C$1:C{}, C{})'.format(
-                current_actual_excel_row_num,
-                current_actual_excel_row_num
-            )
-            sh_new.write(
-                current_xlwt_excel_row_num,
-                len(columns) + 1,
-                xlwt.Formula(formula)
-            )
-            
-            # auto donor student count
-            formula = 'COUNTIF(G$1:G{}, G{})'.format(
-                current_actual_excel_row_num,
-                current_actual_excel_row_num
-            )
-            sh_new.write(
-                current_xlwt_excel_row_num,
-                len(columns) + 2,
-                xlwt.Formula(formula)
-            )
-            
-            # school name len
-            formula = 'LEN(C{})'.format(current_actual_excel_row_num)
-            sh_new.write(
-                current_xlwt_excel_row_num,
-                len(columns) + 3,
-                xlwt.Formula(formula)
-            )
-            
-            for current_column, cx in enumerate(columns):
-                status = STATUS_NORMAL
-                if cx > 0:
-                    #print rx, cx
-                    cell_val = sheet.cell_value(rx, cx)
-                    
-                    # determine styles to use
-                    if cell_val == "":
-                        # Cell value is empty.  Set cell style to 'warning'.
-                        status = status | STATUS_WARNING
-                    else:
-                        cell_style = STYLES['CHINESE']
-                    
-                    # Student name error checking
-                    if cx == sheet.colpos['student_name']:
-                        status = status | check_student_name(
-                                sheet, student_names[:row_count], rx) 
-                        """
-                        use_warning = cell_val in student_names[:row_count]
-                        
-                        # Try to find if same student name exists before
-                        try:
-                            # Get first index of the name's appearance.
-                            found_index = (
-                                student_names[:row_count].index(cell_val) +
-                                ROWS_USED_BY_HEADING
-                            )
-                            
-                            # Check for possible duplicate within the same school.
-                            if (
-                                sheet.get_region(rx) == sheet.get_region(found_index) and
-                                sheet.get_location(rx) == sheet.get_location(found_index) and
-                                sheet.get_school(rx) == sheet.get_school(found_index)
-                            ):
-                                use_error = True
-                                print '\tPOSSIBLE ERROR: {} Row: {} PrevRow: {}'.format(
-                                    cell_val, rx, found_index
-                                )
-                                
-                        except: #success
-                            pass
-                        """
+        # sheets = combine_sheet_numbers#  [int(x) for x in COMBINE_SHEET_NUMBERS.split(',')]
+        #print sheets
+        
+        current_year = eep_shared.current_year
 
-                    # Check if graduation year is past current year
-                    #print cell_val
-                    if cx == sheet.colpos['graduation_year']:
-                        status = status | check_graduation_year(sheet, rx)
-                        """
-                        if cell_val == '':
-                            status = status | STATUS_WARNING
-                        elif unicode(current_year) in unicode(cell_val):
-                            status = status | STATUS_WARNING
-                        elif cell_val < current_year:
-                            status = status | STATUS_ERROR
-                        """
-                    
-                    # if currentVal != previousVal, mark warning
-                    if cx in section_check_cols:
-                        # TODO: Make sure this is correct. It was > 2 originally.
-                        if current_xlwt_excel_row_num > 0:
-                            status = status | mark_sections(sheet, rx, cx)
-                        """
-                            cell_val_prev = sheet.cell_value(rx - 1, cx)
-                            if cell_val != cell_val_prev:
-                                status = status | STATUS_WARNING
-                        """
-                    
-                    if status & STATUS_ERROR:
-                        cell_style = STYLES['ERROR']
-                    elif status & STATUS_WARNING:
-                        cell_style = STYLES['WARNING']
-                    
-                    # write value
-                    sh_new.write(
-                        current_xlwt_excel_row_num,
-                        current_column,
-                        eep_shared.clean_text(cell_val),
-                        cell_style
-                    )
+        """
+        style0 = xlwt.easyxf('font: name Times New Roman, color-index red, bold on', num_format_str='#,##0.00')
+        style1 = xlwt.easyxf(num_format_str='D-MMM-YY')
+        ws.write(1, 0, datetime.now(), style1)
+        ws.write(2, 2, xlwt.Formula("A3+B3"))
+        """
+        #
+        # create column titles
+        #
+        for cx, column_title in enumerate(column_titles):
+            sh_new.write(0, cx, column_title)   
+        
+        i = 0
+        excel_row_lo = self.excel_row_lo
+        total_rows_combined = 0
+        for sheet_count, sheet_index in enumerate(sheets):
+            sh_eep = wb_eep.sheet_by_index(sheet_index)
+            sheet = EepSheet(sh_eep)
+            sheet.colpos = colpos
+            excel_row_hi = sheet.get_sheet_row_hi()
+            total_rows_combined += excel_row_hi - excel_row_lo
+            print 'Sheet: ', sheet_index, ' Rows: ', excel_row_hi
+            
+            # Determine which columns to use.
+            try:
+                columns = SHEET_COLUMNS[str(sheet_count)]
+            except:
+                columns = SHEET_COLUMNS['DEFAULT'];
+
+            # Get all student names first.  Used to check duplicates later.
+            student_names = sheet.col_values(
+                sheet.colpos['student_name'], excel_row_lo, excel_row_hi
+            )
+            # for name in student_names:
+            #    print name
+
+            rng = range(excel_row_lo, excel_row_hi)
+            section_check_cols = [
+                sheet.colpos['region'],
+                sheet.colpos['location'],
+                sheet.colpos['school'],
+                sheet.colpos['student_donor_name']
+            ]
+            for row_count, rx in enumerate(rng):
+                # +2 because one is for heading and one is for actual cell number.
+                current_actual_excel_row_num = i + 2
+                current_xlwt_excel_row_num = i + 1
                 
-            i += 1
-    print 'Total Students: ', total_rows_combined
-    
-    wb_new.save(os.path.join(
-        eep_shared.DESTINATION_DIR,
-        eep_shared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
-    ))
+                # import order id
+                sh_new.write(current_xlwt_excel_row_num, len(columns) + 0, i + 1)
+                
+                # auto student id
+                formula = 'COUNTIF(C$1:C{}, C{})'.format(
+                    current_actual_excel_row_num,
+                    current_actual_excel_row_num
+                )
+                sh_new.write(
+                    current_xlwt_excel_row_num,
+                    len(columns) + 1,
+                    xlwt.Formula(formula)
+                )
+                
+                # auto donor student count
+                formula = 'COUNTIF(G$1:G{}, G{})'.format(
+                    current_actual_excel_row_num, current_actual_excel_row_num
+                )
+                sh_new.write(
+                    current_xlwt_excel_row_num,
+                    len(columns) + 2,
+                    xlwt.Formula(formula)
+                )
+                
+                # school name len
+                formula = 'LEN(C{})'.format(current_actual_excel_row_num)
+                sh_new.write(
+                    current_xlwt_excel_row_num,
+                    len(columns) + 3,
+                    xlwt.Formula(formula)
+                )
+                
+                for current_column, cx in enumerate(columns):
+                    status = self.STATUS_NORMAL
+                    if cx > 0:
+                        #print rx, cx
+                        cell_val = sheet.cell_value(rx, cx)
+                        
+                        # determine styles to use
+                        if cell_val == "":
+                            # Cell value is empty.  Set cell style to 'warning'.
+                            status = status | self.STATUS_WARNING
+                        else:
+                            cell_style = STYLES['CHINESE']
+                        
+                        # Student name error checking
+                        if cx == sheet.colpos['student_name']:
+                            status = status | self.check_student_name(
+                                    sheet, student_names[:row_count], rx) 
 
-def check_student_name(sheet, student_names, rownum):
-    """ Checks whether a student name exists before the rownum.
-    TODO: There's a bug where the first two 
-    """
-    student_name = sheet.get_student_name(rownum)
-    status = STATUS_NORMAL
-    if student_name in student_names:
-        status = STATUS_WARNING
+                        # Check if graduation year is past current year
+                        #print cell_val
+                        if cx == sheet.colpos['graduation_year']:
+                            status = status | self.check_graduation_year(sheet, rx)
+                        
+                        # if currentVal != previousVal, mark warning
+                        if cx in section_check_cols:
+                            # TODO: Make sure this is correct. It was > 2 originally.
+                            if current_xlwt_excel_row_num > 0:
+                                status = status | self.mark_sections(sheet, rx, cx)
+                        
+                        if status & self.STATUS_ERROR:
+                            cell_style = STYLES['ERROR']
+                        elif status & self.STATUS_WARNING:
+                            cell_style = STYLES['WARNING']
+                        
+                        # write value
+                        sh_new.write(
+                            current_xlwt_excel_row_num,
+                            current_column,
+                            eep_shared.clean_text(cell_val),
+                            cell_style
+                        )
+                    
+                i += 1
+        print 'Total Students: ', total_rows_combined
         
-    # Try to find if same student name exists before
-    try:
-        # Get first index of the name's appearance.
-        found_index = student_names.index(student_name) + ROWS_USED_BY_HEADING
-        
-        # Check for possible duplicate within the same school.
-        if (
-            sheet.get_region(rownum) == sheet.get_region(found_index) and
-            sheet.get_location(rownum) == sheet.get_location(found_index) and
-            sheet.get_school(rownum) == sheet.get_school(found_index)
-        ):
-            status = STATUS_ERROR 
-            print '\tPOSSIBLE ERROR: {} Row: {} PrevRow: {}'.format(
-                student_name, rownum, found_index
-            )
+        wb_new.save(os.path.join(
+            eep_shared.DESTINATION_DIR,
+            eep_shared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
+        ))
+
+    def check_student_name(self, sheet, student_names, rownum):
+        """ Checks whether a student name exists before the rownum.
+        TODO: There's a bug where the first two 
+        """
+        student_name = sheet.get_student_name(rownum)
+        status = self.STATUS_NORMAL
+        if student_name in student_names:
+            status = self.STATUS_WARNING
             
-    except:
-        #success
-        pass
+        # Try to find if same student name exists before
+        try:
+            # Get first index of the name's appearance.
+            found_index = student_names.index(student_name) + ROWS_USED_BY_HEADING
+            
+            # Check for possible duplicate within the same school.
+            if (
+                sheet.get_region(rownum) == sheet.get_region(found_index) and
+                sheet.get_location(rownum) == sheet.get_location(found_index) and
+                sheet.get_school(rownum) == sheet.get_school(found_index)
+            ):
+                status = self.STATUS_ERROR 
+                print '\tPOSSIBLE ERROR: {} Row: {} PrevRow: {}'.format(
+                    student_name, rownum, found_index
+                )
+                
+        except:
+            #success
+            pass
 
-    return status
+        return status
 
-def check_graduation_year(sheet, rownum):
-    """ Check possible error in graduation year.
-    """
-    current_year = eep_shared.current_year
-    yr = sheet.get_graduation_year(rownum)
-    try:
-        yr = int(yr)
-    except:
-        return STATUS_WARNING
+    def check_graduation_year(self, sheet, rownum):
+        """ Check possible error in graduation year.
+        """
+        current_year = eep_shared.current_year
+        yr = sheet.get_graduation_year(rownum)
+        try:
+            yr = int(yr)
+        except:
+            return self.STATUS_WARNING
 
-    if yr == '':
-        return STATUS_WARNING
-    elif unicode(current_year) in unicode(yr):
-        return STATUS_WARNING
-    elif yr < current_year:
-        return STATUS_ERROR
+        if yr == '':
+            return self.STATUS_WARNING
+        elif unicode(current_year) in unicode(yr):
+            return self.STATUS_WARNING
+        elif yr < current_year:
+            return self.STATUS_ERROR
 
-    return STATUS_NORMAL
+        return self.STATUS_NORMAL
 
-def mark_sections(sheet, rownum, colnum):
-    # if current_xlwt_excel_row_num > 2:
-    cell_val = sheet.cell_value(rownum, colnum)
-    cell_val_prev = sheet.cell_value(rownum - 1, colnum)
-    if cell_val != cell_val_prev:
-        return STATUS_WARNING
+    def mark_sections(self, sheet, rownum, colnum):
+        cell_val = sheet.cell_value(rownum, colnum)
+        cell_val_prev = sheet.cell_value(rownum - 1, colnum)
+        if cell_val != cell_val_prev:
+            return self.STATUS_WARNING
 
-    return STATUS_NORMAL
+        return self.STATUS_NORMAL
 
-def print_sheetnames(raw_excel_file):
-    """Print sheet index number and it's name.
-    """
-    wb_eep = xlrd.open_workbook(
-        raw_excel_file, on_demand=True, formatting_info=True
-    )
-    sheet_names = wb_eep.sheet_names()
-    for i, name in enumerate(sheet_names):
-        print i, name.strip().encode('utf-8')
+    def print_sheetnames(self, raw_excel_file):
+        """Print sheet index number and it's name.
+        """
+        wb_eep = xlrd.open_workbook(
+            raw_excel_file, on_demand=True, formatting_info=True
+        )
+        sheet_names = wb_eep.sheet_names()
+        for i, name in enumerate(sheet_names):
+            print i, name.strip().encode('utf-8')
 
 def get_argparse():
     """Get cmd line argument parser.
     """
     import argparse
-
-    parser = argparse.ArgumentParser(description='Merges Excel sheets into a new file.')
+    parser = argparse.ArgumentParser(
+            description='Merges Excel sheets into a new file.')
     default_excel_file_na = '{}.xls'.format(
         eep_shared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA
     )
@@ -395,15 +374,15 @@ def get_argparse():
 if __name__ == "__main__":
     args = get_argparse().parse_args()
     raw_excel_file = args.rawexcelfile 
-    
-    print sys.platform
+    # print sys.platform
 
+    eepms = EepMergeSheets()
     # If 'sheetnums' is not specified, print out the sheets in the src Excel file.
     if args.sheetnums is None:
-        print_sheetnames(raw_excel_file)
+        eepms.print_sheetnames(raw_excel_file)
         sys.exit(1)
     
-    # create destination folders if needed
+    # Create destination folders if needed
     eep_shared.create_required_dirs()   
     
-    combine_sheets(raw_excel_file, args.sheetnums)
+    eepms.combine_sheets(raw_excel_file, args.sheetnums)
