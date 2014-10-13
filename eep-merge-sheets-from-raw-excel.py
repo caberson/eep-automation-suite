@@ -212,8 +212,7 @@ def combine_sheets(raw_excel_file, sheets):
             )
             
             for current_column, cx in enumerate(columns):
-                use_warning = False
-                use_error = False
+                status = STATUS_NORMAL
                 if cx > 0:
                     #print rx, cx
                     cell_val = sheet.cell_value(rx, cx)
@@ -221,13 +220,15 @@ def combine_sheets(raw_excel_file, sheets):
                     # determine styles to use
                     if cell_val == "":
                         # Cell value is empty.  Set cell style to 'warning'.
-                        use_warning = True
+                        status = status | STATUS_WARNING
                     else:
                         cell_style = STYLES['CHINESE']
                     
                     # Student name error checking
                     if cx == sheet.colpos['student_name']:
-                        # check_student_name(sheet, student_names[:row_count], 
+                        status = status | check_student_name(
+                                sheet, student_names[:row_count], rx) 
+                        """
                         use_warning = cell_val in student_names[:row_count]
                         
                         # Try to find if same student name exists before
@@ -251,28 +252,36 @@ def combine_sheets(raw_excel_file, sheets):
                                 
                         except: #success
                             pass
+                        """
 
                     # Check if graduation year is past current year
                     #print cell_val
                     if cx == sheet.colpos['graduation_year']:
+                        status = status | check_graduation_year(sheet, rx)
+                        """
                         if cell_val == '':
-                            use_warning = True
+                            status = status | STATUS_WARNING
                         elif unicode(current_year) in unicode(cell_val):
-                            use_warning = True
+                            status = status | STATUS_WARNING
                         elif cell_val < current_year:
-                            use_error = True
+                            status = status | STATUS_ERROR
+                        """
                     
                     # if currentVal != previousVal, mark warning
                     if cx in section_check_cols:
-                        if current_xlwt_excel_row_num > 2:
+                        # TODO: Make sure this is correct. It was > 2 originally.
+                        if current_xlwt_excel_row_num > 0:
+                            status = status | mark_sections(sheet, rx, cx)
+                        """
                             cell_val_prev = sheet.cell_value(rx - 1, cx)
                             if cell_val != cell_val_prev:
-                                use_warning = True
+                                status = status | STATUS_WARNING
+                        """
                     
-                    if use_warning:
-                        cell_style = STYLES['WARNING']
-                    if use_error:
+                    if status & STATUS_ERROR:
                         cell_style = STYLES['ERROR']
+                    elif status & STATUS_WARNING:
+                        cell_style = STYLES['WARNING']
                     
                     # write value
                     sh_new.write(
@@ -291,13 +300,13 @@ def combine_sheets(raw_excel_file, sheets):
     ))
 
 def check_student_name(sheet, student_names, rownum):
-    """
+    """ Checks whether a student name exists before the rownum.
+    TODO: There's a bug where the first two 
     """
     student_name = sheet.get_student_name(rownum)
     status = STATUS_NORMAL
     if student_name in student_names:
-        sttus = STATUS_WARNING
-    # use_warning = cell_val in student_names[:row_count]
+        status = STATUS_WARNING
         
     # Try to find if same student name exists before
     try:
@@ -320,6 +329,34 @@ def check_student_name(sheet, student_names, rownum):
         pass
 
     return status
+
+def check_graduation_year(sheet, rownum):
+    """ Check possible error in graduation year.
+    """
+    current_year = eep_shared.current_year
+    yr = sheet.get_graduation_year(rownum)
+    try:
+        yr = int(yr)
+    except:
+        return STATUS_WARNING
+
+    if yr == '':
+        return STATUS_WARNING
+    elif unicode(current_year) in unicode(yr):
+        return STATUS_WARNING
+    elif yr < current_year:
+        return STATUS_ERROR
+
+    return STATUS_NORMAL
+
+def mark_sections(sheet, rownum, colnum):
+    # if current_xlwt_excel_row_num > 2:
+    cell_val = sheet.cell_value(rownum, colnum)
+    cell_val_prev = sheet.cell_value(rownum - 1, colnum)
+    if cell_val != cell_val_prev:
+        return STATUS_WARNING
+
+    return STATUS_NORMAL
 
 def print_sheetnames(raw_excel_file):
     """Print sheet index number and it's name.
