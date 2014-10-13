@@ -1,4 +1,6 @@
 class EepSheet:
+    """EEP Excel sheet class.
+    """
     colpos = {
         'region': 0,
         'location': 1,
@@ -15,40 +17,6 @@ class EepSheet:
         'auto_donor_student_count_number': 12,
         'school_name_length': 13,
     }
-
-    """
-    COLS = {}
-    COLS.REGION = 0
-    COLS.LOCATION = 1
-    COLS.SCHOOL = 2
-    COLS.STUDENT_NAME = 3
-    COLS.SEX = 4
-    COLS.GRADUATION_YEAR = 5
-    COLS.STUDENT_DONOR_ID = 6
-    COLS.STUDENT_DONOR_NAME = 7
-    COLS.STUDENT_DONOR_DONATION_AMOUNT_LOCAL = 8
-    COLS.COMMENT = 9
-    COLS.IMPORT_ORDER_NUMBER = 10
-    COLS.AUTO_STUDENT_NUMBER = 11
-    COLS.AUTO_DONOR_STUDENT_COUNT_NUMBER = 12
-    COLS.SCHOOL_NAME_LENGTH = 13
-    """
-
-    COL_REGION = 0
-    COL_LOCATION = 1
-    COL_SCHOOL = 2
-    COL_STUDENT_NAME = 3
-    COL_SEX = 4
-    COL_GRADUATION_YEAR = 5
-    COL_STUDENT_DONOR_ID = 6
-    COL_STUDENT_DONOR_NAME = 7
-    COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL = 8
-    COL_COMMENT = 9
-    COL_IMPORT_ORDER_NUMBER = 10
-    COL_AUTO_STUDENT_NUMBER = 11
-    COL_AUTO_DONOR_STUDENT_COUNT_NUMBER = 12
-    COL_SCHOOL_NAME_LENGTH = 13
-
     sheet = None
 
     def __init__(self, sheet):
@@ -58,7 +26,8 @@ class EepSheet:
         return self.sheet.nrows
 
     def get_sheet_row_hi(self):
-        #print excel_row_lo
+        """Return sheet's 'last row' based on whether the first 3 columns' values.
+        """
         excel_row_lo = 0
         excel_row_hi = 0
 
@@ -90,6 +59,8 @@ class EepSheet:
         return excel_row_hi
 
     def cell_value(self, row, col):
+        """Returns cell value and trim white spaces if the value is a string.
+        """
         try:
             val = self.sheet.cell_value(row, col)
             if hasattr(val, 'strip'):
@@ -100,6 +71,8 @@ class EepSheet:
             return ''
 
     def col_values(self, col_pos, start_row, end_row):
+        """Get all values for a column from start_row to end_row.
+        """
         return self.sheet.col_values(col_pos, start_row, end_row)
 
     def get_region(self, row):
