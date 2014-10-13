@@ -113,3 +113,6 @@ class EepSheet:
 
     def get_student_name(self, row):
         return self.cell_value(row, self.colpos['student_name'])
+
+    def get_graduation_year(self, row):
+        return self.cell_value(row, self.colpos['graduation_year'])
