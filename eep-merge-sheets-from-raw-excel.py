@@ -37,7 +37,7 @@ from xlutils.copy import copy
 from xlutils.save import save
 
 # Custom module imports.
-import eep_shared
+import eepshared
 from eepsheet import EepSheet
 
 #
@@ -147,7 +147,7 @@ class EepMergeSheets:
         # sheets = combine_sheet_numbers#  [int(x) for x in COMBINE_SHEET_NUMBERS.split(',')]
         #print sheets
         
-        current_year = eep_shared.current_year
+        current_year = eepshared.current_year
 
         """
         style0 = xlwt.easyxf('font: name Times New Roman, color-index red, bold on', num_format_str='#,##0.00')
@@ -267,7 +267,7 @@ class EepMergeSheets:
                         sh_new.write(
                             current_xlwt_excel_row_num,
                             current_column,
-                            eep_shared.clean_text(cell_val),
+                            eepshared.clean_text(cell_val),
                             cell_style
                         )
                     
@@ -275,8 +275,8 @@ class EepMergeSheets:
         print 'Total Students: ', total_rows_combined
         
         wb_new.save(os.path.join(
-            eep_shared.DESTINATION_DIR,
-            eep_shared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
+            eepshared.DESTINATION_DIR,
+            eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
         ))
 
     def check_student_name(self, sheet, student_names, rownum):
@@ -313,7 +313,7 @@ class EepMergeSheets:
     def check_graduation_year(self, sheet, rownum):
         """ Check possible error in graduation year.
         """
-        current_year = eep_shared.current_year
+        current_year = eepshared.current_year
         yr = sheet.get_graduation_year(rownum)
         try:
             yr = int(yr)
@@ -354,7 +354,7 @@ def get_argparse():
     parser = argparse.ArgumentParser(
             description='Merges Excel sheets into a new file.')
     default_excel_file_na = '{}.xls'.format(
-        eep_shared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA
+        eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA
     )
     parser.add_argument(
         'rawexcelfile',
@@ -383,6 +383,6 @@ if __name__ == "__main__":
         sys.exit(1)
     
     # Create destination folders if needed
-    eep_shared.create_required_dirs()   
+    eepshared.create_required_dirs()   
     
     eepms.combine_sheets(raw_excel_file, args.sheetnums)
