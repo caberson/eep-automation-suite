@@ -2,13 +2,19 @@
 # coding=utf-8
 # -*- coding: utf-8 -*-
 # Copyright (C) 2010 Caber Chu
+"""Generate lists using a prepared Excel EEP data file.
 
-# d:\_cc\development\Python26\python.exe eep-generate-lists.py
+http://www.lexicon.net/sjmachin/xlrd.html
+http://groups.google.com/group/python-excel/browse_thread/thread/23a0b4d6be641755
+http://www.pythonexcels.com/2009/09/another-xlwt-example/
+http://www.python-excel.org/
+https://secure.simplistix.co.uk/svn/xlwt/trunk/xlwt/examples/xlwt_easyxf_simple_demo.py
+re http://gskinner.com/RegExr/
 
-# cd /Users/cc/Projects/eepListFiles
+TODO: Refactor code in this script.
+"""
 
-# python eep-generate-lists.py  ~/Documents/eep/2011f/2011f_eep_combined_sorted.xls
-
+# Standard module imports.
 import sys
 import os
 import glob
@@ -16,59 +22,36 @@ from decimal import *
 import string
 import math
 
+# 3rd party module imports.
 import xlrd
 import xlwt
+from xlwt import easyxf
 import xlutils
 from xlutils.styles import Styles
 from xlutils.display import quoted_sheet_name
 from xlutils.display import cell_display
-
 from xlutils.copy import copy
 from xlutils.save import save
 
-from xlwt import easyxf
-
-import eep_shared
+# Custom module imports.
+import eepshared
 from eepcombinedsheet import EepCombinedSheet
 
-# docs
-# http://www.lexicon.net/sjmachin/xlrd.html
-# http://groups.google.com/group/python-excel/browse_thread/thread/23a0b4d6be641755
-# http://www.pythonexcels.com/2009/09/another-xlwt-example/
-# http://www.python-excel.org/
-# https://secure.simplistix.co.uk/svn/xlwt/trunk/xlwt/examples/xlwt_easyxf_simple_demo.py
-
-# re http://gskinner.com/RegExr/
-
-#
-# constants
-#
-OUTPUT_ENCODING = 'utf-8'
-if sys.platform == 'win32':
-    OUTPUT_ENCODING = 'big5'
-
-#
-# parameters
-#
-SHEET_TITLE_BASE = eep_shared.get_chinese_title_for_time()
-print SHEET_TITLE_BASE.encode(OUTPUT_ENCODING)
+# TODO: Move these constants into the EepLists class.
+# global vars
+# Heading rows used by the data source Excel file.
+SRC_HEADING_ROWS = 1
+SHEET_TITLE_BASE = eepshared.get_chinese_title_for_time()
 
 PROCESSED_EXCEL_FILE = (
-    eep_shared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
+    eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
 )
 TEMPLATE_DIR = (
     os.path.join(os.path.dirname(os.path.realpath(__file__)), 'templates')
 )
 
-#
-#global vars
-#
-SRC_HEADING_ROWS = 1    # used by the data source excel file
-
-
-excel_row_lo = 1
-excel_row_hi = 0
-
+# TODO: Some parts of the script still uses these constants.  Need to convert
+# them to the newer one so we can remove this section.
 COL_REGION = 0
 COL_LOCATION = 1
 COL_SCHOOL = 2
@@ -85,8 +68,9 @@ COL_AUTO_DONOR_STUDENT_COUNT_NUMBER = 12
 COL_SCHOOL_NAME_LENGTH = 13
 
 
-
 class EepLists:
+    """Class to generate various Excel lists using the prepped one.
+    """
     # Notes: Font height = height (x pt * 20)
     STYLES = {
         'CHINESE': xlwt.easyxf(u'font: name 宋体;'),
@@ -119,6 +103,7 @@ class EepLists:
             u'font: name 宋体; pattern: pattern solid, fore-colour yellow;'
         ),
     }
+    CHAR_WIDTH = 256
 
     # Source Excel heading rows.
     src_heading_rows = 1
@@ -171,15 +156,13 @@ class EepLists:
                     formatting_info=True
                 ),
             }
-            # wb_template_lettersubmitlist
-            # wb_template_checklist =
-            # wb_template_receivinglist =         
         except:
             print 'No template files found.'
             print TEMPLATE_DIR
             sys.exit()
     
     def get_new_masterlist_wb(self, column_titles):
+        cw = self.CHAR_WIDTH
         wb_masterlist = xlwt.Workbook()
         sh_masterlist = wb_masterlist.add_sheet('masterlist')
         sh_masterlist.portrait = 0
@@ -192,14 +175,14 @@ class EepLists:
         sh_masterlist.set_left_margin(0.27)
         sh_masterlist.set_right_margin(.25)
 
-        sh_masterlist.col(0).width = math.trunc(3 * 256)    #auto student id 
-        sh_masterlist.col(1).width = math.trunc(10 * 256)   #student
-        sh_masterlist.col(2).width = math.trunc(3 * 256)    #sex
-        sh_masterlist.col(3).width = math.trunc(4 * 256)    #graduation-yr
-        sh_masterlist.col(4).width = math.trunc(4 * 256)    #donor-id
-        sh_masterlist.col(5).width = math.trunc(17 * 256)   #donor-name
-        sh_masterlist.col(6).width = math.trunc(4 * 256)    #donation amount
-        sh_masterlist.col(7).width = math.trunc(85 * 256)   #comment
+        sh_masterlist.col(0).width = math.trunc(3 * cw)    #auto student id 
+        sh_masterlist.col(1).width = math.trunc(10 * cw)   #student
+        sh_masterlist.col(2).width = math.trunc(3 * cw)    #sex
+        sh_masterlist.col(3).width = math.trunc(4 * cw)    #graduation-yr
+        sh_masterlist.col(4).width = math.trunc(4 * cw)    #donor-id
+        sh_masterlist.col(5).width = math.trunc(17 * cw)   #donor-name
+        sh_masterlist.col(6).width = math.trunc(4 * cw)    #donation amount
+        sh_masterlist.col(7).width = math.trunc(85 * cw)   #comment
 
         # create column titles
         for cx, column_title in enumerate(column_titles):
@@ -280,30 +263,33 @@ class EepLists:
                 total_title_rows += 1
                 current_xlwt_excel_row_num += 1
 
-            name_columns = [sheet.COL_STUDENT_NAME, sheet.COL_STUDENT_DONOR_NAME]
+            name_columns = [
+                sheet.colpos['student_name'],
+                sheet.colpos['student_donor_name']
+            ]
             for current_column, cx in enumerate(columns):
                 cell_val = sheet.cell_value(current_xlrd_excel_row_num, cx)
                 
                 if cx in name_columns:
-                    cell_val = eep_shared.remove_parenthesis_content(cell_val)
+                    cell_val = eepshared.remove_parenthesis_content(cell_val)
                 
-                if cx == sheet.COL_COMMENT:
+                if cx == sheet.colpos['comment']:
                     cell_style = self.STYLES['CELL_LISTING_WRAP']
                 else:
                     cell_style = self.STYLES['CELL_LISTING']
                 
-                # write value
+                # Write to cell.
                 sh_masterlist.write(
                     current_xlwt_excel_row_num, current_column,
-                    eep_shared.clean_text(cell_val), cell_style
+                    eepshared.clean_text(cell_val), cell_style
                 )
 
         output_file_name = u'{}_masterlist_2_{}.xls'.format(
-            eep_shared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA,
+            eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA,
             for_region
         )
         output_file = os.path.join(
-            eep_shared.INSPECTION_DOCUMENTS_DESTINATION_DIR, output_file_name
+            eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR, output_file_name
         )
         wb_masterlist.save(output_file)
         
@@ -316,12 +302,9 @@ class EepLists:
         school_count = 0
         current_row_count = 0 
         for i in xrange(self.src_heading_rows, excel_row_hi):
-            print i,
             current_school = sheet.get_school(i)
-            # if current_school == u'國立宜蘭高級中學':
-            print '-------------------------', current_school.encode('utf-8')
-
-            # If there are more rows
+            
+            # If there are more rows, check for school change.
             if i + 1 < excel_row_hi:
                 next_school = sheet.get_school(i + 1);
                 if current_school == next_school:
@@ -338,10 +321,6 @@ class EepLists:
 
             last_school = current_school
             section_begin_row_num = i + 1
-                
-            # print i
-            if i + 1 >= excel_row_hi:
-                print i, "End..."
     
     def generate_school_lists(self, beg_row, end_row):
         sheet = self.data_sheet
@@ -349,8 +328,6 @@ class EepLists:
             region = sheet.get_region(beg_row)
             location = sheet.get_location(beg_row)
             school = sheet.get_school(beg_row)
-            # sheet_title = region  + " " + location + " " + school
-            # print sheet_title
         except:
             return
 
@@ -362,8 +339,7 @@ class EepLists:
             str(end_row - beg_row + 1),
             ' create_checklist, receivinglist, lettersubmitlist',
             school,
-        ]).encode(OUTPUT_ENCODING)
-        # print output
+        ]).encode(eepshared.OUTPUT_ENCODING)
         self.create_lettersubmitlist(beg_row, end_row)
         self.create_checklist(beg_row, end_row)
         self.create_receivinglist(beg_row, end_row)
@@ -381,15 +357,16 @@ class EepLists:
         #print wb_template.font_list[s[sh_template.cell(0, 0)].xf.font_index]
         #print wb_template.colour_map[wb_template.font_list[s[sh_template.cell(0, 0)].xf.font_index].colour_index]
 
+        cw = self.CHAR_WIDTH
         # Modify dynamic values
-        sh_new.col(0).width = math.trunc(4.1 * 256)
+        sh_new.col(0).width = math.trunc(4.1 * cw)
         # Student name column.
-        sh_new.col(2).width = math.trunc(8 * 256)
-        sh_new.col(5).width = math.trunc(5.5 * 256)
+        sh_new.col(2).width = math.trunc(8 * cw)
+        sh_new.col(5).width = math.trunc(5.5 * cw)
         # Donor name column.
-        sh_new.col(6).width = math.trunc(18 * 256)
+        sh_new.col(6).width = math.trunc(18 * cw)
         # Comment column.  75 for office 2008 and 80 for office 2011
-        sh_new.col(8).width = math.trunc(78 * 256)  
+        sh_new.col(8).width = math.trunc(78 * cw)  
 
         sh_new.portrait = 0
         #sh_new.show_headers = 0
@@ -417,16 +394,16 @@ class EepLists:
         lettersubmitlist_columns = [
             0,
             0,
-            sheet.COL_STUDENT_NAME,
-            sheet.COL_SEX,
-            sheet.COL_GRADUATION_YEAR,
-            sheet.COL_STUDENT_DONOR_ID,
-            sheet.COL_STUDENT_DONOR_NAME,
-            sheet.COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL,
-            sheet.COL_COMMENT
+            sheet.colpos['student_name'],
+            sheet.colpos['sex'],
+            sheet.colpos['graduation_year'],
+            sheet.colpos['student_donor_id'],
+            sheet.colpos['student_donor_name'],
+            sheet.colpos['student_donor_donation_amount_local'],
+            sheet.colpos['comment'],
         ]
 
-        # title
+        # Title
         region = sheet.get_region(row_lo)
         location = sheet.get_location(row_lo)
         school = sheet.get_school(row_lo)
@@ -435,25 +412,24 @@ class EepLists:
             0, 0, 0, 6, sheet_title, self.STYLES['CELL_LISTING_TITLE']
         )
 
-        # year
+        # Year
         yr_title = SHEET_TITLE_BASE + u'對口救助學生名冊'
         sh_new.write_merge(
             0, 0, 7, 8, yr_title, self.STYLES['CELL_LISTING_TITLE']
         )
 
-        # total rows processed so far
+        # Total rows processed so far
         i = 0
         for rx in range(row_lo, row_hi + 1):
-            #1 for heading and 1 for actual cell number
+            # 1 for heading and 1 for actual cell number
             current_actual_excel_row_num = i + 3 
             current_xlrd_excel_row_num = rx
             current_xlwt_excel_row_num = i + TGT_HEADING_ROWS
-            #print rownum, sh.row_values(rownum)
 
             sh_new.row(current_xlwt_excel_row_num).height = math.trunc(2 * 255)
             sh_new.row(current_xlwt_excel_row_num).height_mismatch = 1
 
-            # row id
+            # Row id
             studentIDColumn = 1
             sh_new.write(
                 current_xlwt_excel_row_num, studentIDColumn, i + 1,
@@ -466,23 +442,23 @@ class EepLists:
                 if cx > 0:
                     cell_val = sheet.cell_value(current_xlrd_excel_row_num, cx)
 
-                    if cx not in [sheet.COL_COMMENT]:
-                        cell_val = eep_shared.remove_parenthesis_content(cell_val)
+                    if cx not in [sheet.colpos['comment']]:
+                        cell_val = eepshared.remove_parenthesis_content(cell_val)
                     else:
                         cell_style = self.STYLES['CELL_LISTING_WRAP']
 
-                    # if name column
-                    if cx in [sheet.COL_STUDENT_NAME]:
+                    # If name column
+                    if cx in [sheet.colpos['student_name']]:
                         dashPosition = cell_val.find(u'-')
                         
                         if dashPosition >= 0 and len(cell_val) - dashPosition > 2:
                             cell_val = cell_val[:dashPosition] + "\n" + cell_val[dashPosition:]
-                            # also change cellstyle to wrap
+                            # Also change cellstyle to wrap
                             cell_style = self.STYLES['CELL_LISTING_WRAP']
 
                     sh_new.write(
                         current_xlwt_excel_row_num, current_column,
-                        eep_shared.clean_text(cell_val), cell_style
+                        eepshared.clean_text(cell_val), cell_style
                     )
 
                 current_column += 1
@@ -491,24 +467,27 @@ class EepLists:
 
         output_file_name = u'lsl{}.xls'.format(sheet_title)
         output_file = os.path.join(
-            eep_shared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
+            eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
             'lettersubmitlist',
             output_file_name
         )
         wb_new.save(output_file)
-        #end
+        # End
 
     def get_new_checklist_wb(self):
+        """Get a new checklist workbook object.
+        """
         wb_new = copy(self.templates['checklist'])
 
         sh_new = wb_new.get_sheet(0)
         sh_new.portrait = 0
-        # modify dynamic values
-        sh_new.col(0).width = math.trunc(4.1 * 256)
-        sh_new.col(2).width = math.trunc(8 * 256) #student name
-        sh_new.col(5).width = math.trunc(5.5 * 256)
-        sh_new.col(6).width = math.trunc(18 * 256) #donor name
-        sh_new.col(8).width = math.trunc(78 * 256)
+        # Modify dynamic values
+        cw = self.CHAR_WIDTH
+        sh_new.col(0).width = math.trunc(4.1 * cw)
+        sh_new.col(2).width = math.trunc(8 * cw) #student name
+        sh_new.col(5).width = math.trunc(5.5 * cw)
+        sh_new.col(6).width = math.trunc(18 * cw) #donor name
+        sh_new.col(8).width = math.trunc(78 * cw)
         
         sh_new.portrait = 0
         
@@ -531,23 +510,23 @@ class EepLists:
         checklist_columns = [
             0,
             0,
-            sheet.COL_STUDENT_NAME,
-            sheet.COL_SEX,
-            sheet.COL_GRADUATION_YEAR,
-            sheet.COL_STUDENT_DONOR_ID,
-            sheet.COL_STUDENT_DONOR_NAME,
-            sheet.COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL,
-            sheet.COL_COMMENT
+            sheet.colpos['student_name'],
+            sheet.colpos['sex'],
+            sheet.colpos['graduation_year'],
+            sheet.colpos['student_donor_id'],
+            sheet.colpos['student_donor_name'],
+            sheet.colpos['student_donor_donation_amount_local'],
+            sheet.colpos['comment'],
         ]
         
-        # title
+        # Title
         region = sheet.get_region(row_lo)
         location = sheet.get_location(row_lo)
         school = sheet.get_school(row_lo)
         sheet_title = region  + " " + location + " " + school
         sh_new.write_merge(0, 0, 0, 6, sheet_title, self.STYLES['CELL_LISTING_TITLE'])   
         
-        # year
+        # Year
         yr_title = SHEET_TITLE_BASE + u'對口救助學生名冊'
         sh_new.write_merge(0, 0, 7, 8, yr_title, self.STYLES['CELL_LISTING_TITLE'])  
         
@@ -556,12 +535,11 @@ class EepLists:
             current_actual_excel_row_num = i + 3 #1 for heading and 1 for actual cell number
             current_xlrd_excel_row_num = rx
             current_xlwt_excel_row_num = i + TGT_HEADING_ROWS
-            #print rownum, sh.row_values(rownum)
             
             sh_new.row(current_xlwt_excel_row_num).height = math.trunc(2 * 255)
             sh_new.row(current_xlwt_excel_row_num).height_mismatch = 1
             
-            # row id
+            # Row id
             studentIDColumn = 1
             sh_new.write(
                 current_xlwt_excel_row_num, studentIDColumn, i + 1, self.STYLES['CELL_LISTING']
@@ -573,23 +551,23 @@ class EepLists:
                 if cx > 0:
                     cell_val = sheet.cell_value(current_xlrd_excel_row_num, cx)
                     
-                    if cx not in [sheet.COL_COMMENT]:
-                        cell_val = eep_shared.remove_parenthesis_content(cell_val)
+                    if cx not in [sheet.colpos['comment']]:
+                        cell_val = eepshared.remove_parenthesis_content(cell_val)
                     else:
                         cell_style = self.STYLES['CELL_LISTING_WRAP']
                     
-                    # if name column
-                    if cx in [sheet.COL_STUDENT_NAME]:
+                    # If name column
+                    if cx in [sheet.colpos['student_name']]:
                         dashPosition = cell_val.find(u'-')
 
                         if dashPosition >= 0 and len(cell_val) - dashPosition > 2:
                             cell_val = cell_val[:dashPosition] + "\n" + cell_val[dashPosition:]
-                            # also change cellstyle to wrap
+                            # Also change cellstyle to wrap
                             cell_style = self.STYLES['CELL_LISTING_WRAP']
 
                     sh_new.write(
                         current_xlwt_excel_row_num, current_column,
-                        eep_shared.clean_text(cell_val), cell_style
+                        eepshared.clean_text(cell_val), cell_style
                     )
                 current_column += 1
                 
@@ -597,7 +575,7 @@ class EepLists:
         
         output_file_name = u'cl{}.xls'.format(sheet_title)
         output_file = os.path.join(
-            eep_shared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
+            eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
             'checkinglist',
             output_file_name
         )
@@ -605,19 +583,22 @@ class EepLists:
         #end
 
     def get_new_receivinglist_wb(self):
+        """Create a new receiving list workbook object.
+        """
         wb_new = copy(self.templates['receivinglist'])
 
         sh_new = wb_new.get_sheet(0)
         sh_new.portrait = 0
 
-        # modify dynamic values
-        sh_new.col(0).width = math.trunc(4.1 * 256) #checkbox
-        sh_new.col(1).width = math.trunc(4.1 * 256) #student id
-        sh_new.col(2).width = math.trunc(12 * 256)  #donor name
-        sh_new.col(5).width = math.trunc(4.5 * 256) #donor id
-        sh_new.col(6).width = math.trunc(20 * 256)  # donation amount
-        sh_new.col(8).width = math.trunc(36 * 256)  # signature
-        sh_new.col(9).width = math.trunc(36 * 256)  # notes
+        # Modify dynamic values
+        cw = self.CHAR_WIDTH
+        sh_new.col(0).width = math.trunc(4.1 * cw) #checkbox
+        sh_new.col(1).width = math.trunc(4.1 * cw) #student id
+        sh_new.col(2).width = math.trunc(12 * cw)  #donor name
+        sh_new.col(5).width = math.trunc(4.5 * cw) #donor id
+        sh_new.col(6).width = math.trunc(20 * cw)  # donation amount
+        sh_new.col(8).width = math.trunc(36 * cw)  # signature
+        sh_new.col(9).width = math.trunc(36 * cw)  # notes
         
         sh_new.set_header_margin(0) 
         sh_new.set_footer_margin(0) 
@@ -636,21 +617,21 @@ class EepLists:
         sh_new = wb_new.get_sheet(0)
         sheet = self.data_sheet
 
-        COL_REASON = 9
+        # Special column that is created for this list.
+        col_reason = 9
         
         receivinglist_columns = [
             0,
             0,
-            sheet.COL_STUDENT_NAME,
-            sheet.COL_SEX,
-            sheet.COL_GRADUATION_YEAR,
-            sheet.COL_STUDENT_DONOR_ID,
-            sheet.COL_STUDENT_DONOR_NAME,
-            sheet.COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL
+            sheet.colpos['student_name'],
+            sheet.colpos['sex'],
+            sheet.colpos['graduation_year'],
+            sheet.colpos['student_donor_id'],
+            sheet.colpos['student_donor_name'],
+            sheet.colpos['student_donor_donation_amount_local'],
         ]
-        #print excel_row_lo, ' _ ', excel_row_hi, ' _ ', checklist_columns
         
-        # title
+        # Title
         region = sheet.get_region(row_lo)
         location = sheet.get_location(row_lo)
         school = sheet.get_school(row_lo)
@@ -659,7 +640,7 @@ class EepLists:
             0, 0, 0, 6, sheet_title, self.STYLES['CELL_LISTING_TITLE']
         )
         
-        # year
+        # Year
         yr_title = SHEET_TITLE_BASE + u'對口救助學生名冊'
         sh_new.write_merge(0, 0, 7, 9, yr_title, self.STYLES['CELL_LISTING_TITLE'])  
         
@@ -684,9 +665,10 @@ class EepLists:
                     #print i, ":", x
                     cell_val = sheet.cell_value(rx, cx)
                     
-                    if cx not in [sheet.COL_COMMENT]:
+                    if cx not in [sheet.colpos['comment']]:
                         replaced = []
-                        cell_val = eep_shared.remove_parenthesis_content(cell_val, replaced)
+                        cell_val = eepshared.remove_parenthesis_content(
+                                cell_val, replaced)
                         if len(replaced) > 0:
                             replacedText = replaced[0]
                     else:
@@ -695,15 +677,15 @@ class EepLists:
                     sh_new.write(
                         current_xlwt_excel_row_num,
                         current_column,
-                        eep_shared.clean_text(cell_val),
+                        eepshared.clean_text(cell_val),
                         cell_style
                     )
 
                     # Special provision for student name
-                    if cx == sheet.COL_STUDENT_NAME and len(replaced) > 0:
+                    if cx == sheet.colpos['student_name'] and len(replaced) > 0:
                         sh_new.write(
                             current_xlwt_excel_row_num,
-                            COL_REASON,
+                            col_reason,
                             replaced[0],
                             cell_style
                         )
@@ -714,7 +696,7 @@ class EepLists:
         
         output_file_name = u'rl{}.xls'.format(sheet_title)
         output_file = os.path.join(
-            eep_shared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
+            eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
             'receivinglist',
             output_file_name
         )
@@ -722,6 +704,9 @@ class EepLists:
 # END CLASS
 
 def generate_xmldata():
+    """TODO: This method is no longer being used and needs to be updated if
+    it's needed again.
+    """
     from xml.dom import minidom
     
     roottag = "<students/>"
@@ -729,17 +714,12 @@ def generate_xmldata():
     
     fields = ['sid', 'name', 'schoolState', 'schoolCity', 'schoolName', 'sex', 'graduationYear', 'donorNumber', 'donorName', 'scholarshipAmount', 'notes','importOrder', 'autoStudentId', 'autoDonorStudentCountNumber', 'schoolNameLength']
     columns = [COL_AUTO_STUDENT_NUMBER, COL_STUDENT_NAME, COL_REGION, COL_LOCATION, COL_SCHOOL, COL_SEX, COL_GRADUATION_YEAR, COL_STUDENT_DONOR_ID, COL_STUDENT_DONOR_NAME, COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL, COL_COMMENT, COL_IMPORT_ORDER_NUMBER, COL_AUTO_STUDENT_NUMBER, COL_AUTO_DONOR_STUDENT_COUNT_NUMBER,COL_SCHOOL_NAME_LENGTH]
-    # columns = [COL_GRADUATION_YEAR]
-
-
 
     for current_row_count, rx in enumerate(xrange(excel_row_lo, excel_row_hi)): #sh.nrows
-        #print current_row_count, ' ', rx
-        #current_actual_excel_row_num = current_row_count + 2 #1 for heading and 1 for actual cell number
         current_xlrd_excel_row_num = current_row_count + SRC_HEADING_ROWS
         current_xlwt_excel_row_num = current_row_count + 1
         
-        student = root.createElement("student")
+        student = root.createElement('student')
         root.documentElement.appendChild(student)
 
         for current_column, cx in enumerate(columns):
@@ -751,17 +731,11 @@ def generate_xmldata():
             tmpNode.appendChild(root.createTextNode(unicode(cell_val)))
             student.appendChild(tmpNode)
             
-
-    #   wb_masterlist.save('test/2011_eep_masterlist.xls')
-    #FILE = open('test/EEPStudents.xml',"w").write(root.toprettyxml().encode('UTF-8'))
-    FILE = open(eep_shared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'EEPStudents.xml',"w").write(root.toxml().encode('UTF-8'))
-    #print root.toprettyxml()
-    #root.writexml(FILE)
-
-
-    #end
-
-# 蔡政廷 （14春名字更正，廷to延）
+    # Save the file
+    f = open(os.path.join(
+        eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
+        'EEPStudents.xml', 'w'
+    )).write(root.toxml().encode('UTF-8'))
 
 
 # BEGIN MAIN ==================================================================
@@ -774,7 +748,7 @@ if __name__ == "__main__":
         pass
 
     if len(sys.argv) < 2:
-        srcExcelFile = glob.glob(eep_shared.DESTINATION_DIR + '*_combined_sorted.xls')
+        srcExcelFile = glob.glob(eepshared.DESTINATION_DIR + '*_combined_sorted.xls')
         
         if len(srcExcelFile) == 1:
             PROCESSED_EXCEL_FILE = srcExcelFile[0]
@@ -783,17 +757,15 @@ if __name__ == "__main__":
             sys.exit(1)
 
     
-    # create destination folders if needed
-    eep_shared.create_required_dirs()   
+    # Create destination folders if needed.
+    eepshared.create_required_dirs()   
 
     eeplists = EepLists(PROCESSED_EXCEL_FILE)
     eeplists.src_heading_rows = SRC_HEADING_ROWS
 
-    # master lists
+    # Generate master lists.
     # Separate China and Taiwan into different lists.
     eeplists.generate_masterlist('c')
     eeplists.generate_masterlist('t')
 
     eeplists.process_schools()
-
-    #generate_xmldata() # generates xml for iphone app
