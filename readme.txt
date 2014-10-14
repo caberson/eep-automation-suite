@@ -1,7 +1,7 @@
 Steps
 ======================
 * (Now optional) Init a directory for season.
-  python ~/Projects/eepListFiles/eep_shared.py
+  python eep_shared.py
 
 * Make sure ROWS_USED_BY_HEADING in "eep-merge-sheets-from-raw-excel.py" is correct.  Default is 3.
 
@@ -12,7 +12,7 @@ Steps
   Clear ending rows for example.  Make sure China tab is first and Taiwan is 2nd
 
 * Create year{seasonLetter}_eep_combined.xls.
-  python ~/Projects/eepListFiles/eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/2013s/2013s_eep.xls 15,16 #0 based.
+  python eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/2013s/2013s_eep.xls 15 16 #0 based.
 
 * Open up x_eep_combined.xls, clean up(font problem if exists) and save using Excel program.
   This forces calculation of formulas that can be used in the next step.
