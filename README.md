@@ -1,10 +1,10 @@
 Enlightenment Foundation tools
 ===============
-This project provide a few tools that I use to semi-automate some tedious
-tasks at the organization that I volunteer at.  The script mainly deal with
-reading and creating Excel files that are needed every six months.
+This project provides a few tools that I use to semi-automate some tedious and
+repetitive tasks at the organization that I volunteer at.  The script mainly
+deal with reading and creating Excel files that are needed every six months.
 
-While these tools work, they do require a LOT of cleanup.
+While these tools work, they do require a LOT of cleanup and refactoring.
 
 
 Requirements
