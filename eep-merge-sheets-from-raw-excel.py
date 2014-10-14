@@ -63,6 +63,7 @@ colpos = {
     'comment_tw': 14,
 }
 
+""" TODO: Obsolete code. Remove later.
 COL_REGION = 1
 COL_LOCATION = 2
 COL_SCHOOL = 3
@@ -77,7 +78,7 @@ COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL = 11
 COL_STUDENT_DONOR_DONATION_AMOUNT_US = 12
 COL_COMMENT = 13    #N
 COL_COMMENT_TW = 14 #O
-
+"""
 
 SHEET_COLUMNS = {
     'DEFAULT': [
@@ -114,16 +115,17 @@ STYLES = {
     'CELL_LISTING_TITLE': xlwt.easyxf(u'font: name 宋体, bold on, height 280; align: wrap off, shrink_to_fit on; borders: left %d, right %d, top %d, bottom %d' % (xlwt.Borders.THIN, xlwt.Borders.THIN, xlwt.Borders.THIN, xlwt.Borders.THIN)),
     'WARNING': xlwt.easyxf(u'font: name 宋体; pattern: pattern solid, fore-colour yellow;'),
     'ERROR': xlwt.easyxf(u'font: name 宋体; pattern: pattern solid, fore-colour red;'),
-    }
+}
 
 
 class EepMergeSheets:
+    # Excel cell style flags.
     STATUS_NORMAL = 0
     STATUS_WARNING = 1
     STATUS_ERROR = 2
 
     excel_row_lo = ROWS_USED_BY_HEADING
-    excel_row_hi = 0 # do not hard code this
+    excel_row_hi = 0
 
     #
     # create a new file
