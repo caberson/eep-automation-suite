@@ -66,3 +66,13 @@ NOTE: Use BiauKaiTee if possible.
 May have to print to PDF for all files so format remains the same when printed at EEP office.
 
 6. Print volunteer list.  Use eep/templates/volunteer-name-tags.docx.  Remember to point to the right donor file in the corresponding year.
+
+
+Volunteer Name Tags
+===============
+If necessary, use the following two Excel mail merge files to generate
+volunteer name tags.  Both Excel utilizes the same volunteer-names.xls loated
+in et/cdata.
+
+- tools/volunteer-labels.docx
+- tools/volunteer-sticky-labels.docx
