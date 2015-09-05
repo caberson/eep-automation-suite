@@ -390,13 +390,15 @@ def get_argparse():
 
 # BEGIN MAIN ==================================================================
 if __name__ == "__main__":
-    args = get_argparse().parse_args()
+    parser = get_argparse()
+    args = parser.parse_args()
     raw_excel_file = args.rawexcelfile
     # print sys.platform
 
     eepms = EepMergeSheets()
     # If 'sheetnums' is not specified, print out the sheets in the src Excel file.
     if not args.sheetnums:
+        parser.print_help()
         eepms.print_sheetnames(raw_excel_file)
         sys.exit(1)
 
