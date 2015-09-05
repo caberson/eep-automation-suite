@@ -38,6 +38,7 @@ from xlutils.save import save
 
 # Custom module imports.
 import eepshared
+import eeputil
 from eepsheet import EepSheet
 
 #
@@ -131,16 +132,20 @@ class EepMergeSheets:
     # create a new file
     #
     def combine_sheets(self, raw_excel_file, sheets):
-        # open raw excel file to read
-        wb_eep = xlrd.open_workbook(
-            raw_excel_file, on_demand=True, formatting_info=True
-        )
+        try:
+            # open raw excel file to read
+            wb_eep = xlrd.open_workbook(
+                raw_excel_file, on_demand=True, formatting_info=True
+            )
+        except:
+            print "Error opening file ", raw_excel_file
+            return
 
         # New workbook
         wb_new = xlwt.Workbook()
         sh_new = wb_new.add_sheet('final-data')
         sh_new.portrait = 0
-        
+
         column_titles = [
             'region', 'location', 'school-na', 'student-name', 'sex', 'grad-yr',
             'donor-id', 'donor-na', 'donate-amt', 'comment', 'ipt_odr_nr',
@@ -148,7 +153,7 @@ class EepMergeSheets:
         ]
         # sheets = combine_sheet_numbers#  [int(x) for x in COMBINE_SHEET_NUMBERS.split(',')]
         #print sheets
-        
+
         current_year = eepshared.current_year
 
         """
@@ -161,8 +166,8 @@ class EepMergeSheets:
         # create column titles
         #
         for cx, column_title in enumerate(column_titles):
-            sh_new.write(0, cx, column_title)   
-        
+            sh_new.write(0, cx, column_title)
+
         i = 0
         excel_row_lo = self.excel_row_lo
         total_rows_combined = 0
@@ -173,7 +178,7 @@ class EepMergeSheets:
             excel_row_hi = sheet.get_sheet_row_hi()
             total_rows_combined += excel_row_hi - excel_row_lo
             print 'Sheet: ', sheet_index, ' Rows: ', excel_row_hi
-            
+
             # Determine which columns to use.
             try:
                 columns = SHEET_COLUMNS[str(sheet_count)]
@@ -198,10 +203,10 @@ class EepMergeSheets:
                 # +2 because one is for heading and one is for actual cell number.
                 current_actual_excel_row_num = i + 2
                 current_xlwt_excel_row_num = i + 1
-                
+
                 # import order id
                 sh_new.write(current_xlwt_excel_row_num, len(columns) + 0, i + 1)
-                
+
                 # auto student id
                 formula = 'COUNTIF(C$1:C{}, C{})'.format(
                     current_actual_excel_row_num,
@@ -212,7 +217,7 @@ class EepMergeSheets:
                     len(columns) + 1,
                     xlwt.Formula(formula)
                 )
-                
+
                 # auto donor student count
                 formula = 'COUNTIF(G$1:G{}, G{})'.format(
                     current_actual_excel_row_num, current_actual_excel_row_num
@@ -222,7 +227,7 @@ class EepMergeSheets:
                     len(columns) + 2,
                     xlwt.Formula(formula)
                 )
-                
+
                 # school name len
                 formula = 'LEN(C{})'.format(current_actual_excel_row_num)
                 sh_new.write(
@@ -230,41 +235,41 @@ class EepMergeSheets:
                     len(columns) + 3,
                     xlwt.Formula(formula)
                 )
-                
+
                 for current_column, cx in enumerate(columns):
                     status = self.STATUS_NORMAL
                     if cx > 0:
                         #print rx, cx
                         cell_val = sheet.cell_value(rx, cx)
-                        
+
                         # determine styles to use
                         if cell_val == "":
                             # Cell value is empty.  Set cell style to 'warning'.
                             status = status | self.STATUS_WARNING
                         else:
                             cell_style = STYLES['CHINESE']
-                        
+
                         # Student name error checking
                         if cx == sheet.colpos['student_name']:
                             status = status | self.check_student_name(
-                                    sheet, student_names[:row_count], rx) 
+                                    sheet, student_names[:row_count], rx)
 
                         # Check if graduation year is past current year
                         #print cell_val
                         if cx == sheet.colpos['graduation_year']:
                             status = status | self.check_graduation_year(sheet, rx)
-                        
+
                         # if currentVal != previousVal, mark warning
                         if cx in section_check_cols:
                             # TODO: Make sure this is correct. It was > 2 originally.
                             if current_xlwt_excel_row_num > 0:
                                 status = status | self.mark_sections(sheet, rx, cx)
-                        
+
                         if status & self.STATUS_ERROR:
                             cell_style = STYLES['ERROR']
                         elif status & self.STATUS_WARNING:
                             cell_style = STYLES['WARNING']
-                        
+
                         # write value
                         sh_new.write(
                             current_xlwt_excel_row_num,
@@ -272,10 +277,10 @@ class EepMergeSheets:
                             eepshared.clean_text(cell_val),
                             cell_style
                         )
-                    
+
                 i += 1
         print 'Total Students: ', total_rows_combined
-        
+
         wb_new.save(os.path.join(
             eepshared.DESTINATION_DIR,
             eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
@@ -283,29 +288,29 @@ class EepMergeSheets:
 
     def check_student_name(self, sheet, student_names, rownum):
         """ Checks whether a student name exists before the rownum.
-        TODO: There's a bug where the first two 
+        TODO: There's a bug where the first two
         """
         student_name = sheet.get_student_name(rownum)
         status = self.STATUS_NORMAL
         if student_name in student_names:
             status = self.STATUS_WARNING
-            
+
         # Try to find if same student name exists before
         try:
             # Get first index of the name's appearance.
             found_index = student_names.index(student_name) + ROWS_USED_BY_HEADING
-            
+
             # Check for possible duplicate within the same school.
             if (
                 sheet.get_region(rownum) == sheet.get_region(found_index) and
                 sheet.get_location(rownum) == sheet.get_location(found_index) and
                 sheet.get_school(rownum) == sheet.get_school(found_index)
             ):
-                status = self.STATUS_ERROR 
+                status = self.STATUS_ERROR
                 print '\tPOSSIBLE ERROR: {} Row: {} PrevRow: {}'.format(
                     student_name, rownum, found_index
                 )
-                
+
         except:
             #success
             pass
@@ -358,9 +363,14 @@ def get_argparse():
     default_excel_file_na = '{}.xls'.format(
         eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA
     )
+    default_excel_file = os.path.join(
+        eepshared.DESTINATION_DIR, default_excel_file_na
+    )
+
     parser.add_argument(
         'rawexcelfile',
-        default=default_excel_file_na,
+        nargs='?',
+        default=default_excel_file,
         help='Source Excel file name (default: %(default)s)',
     )
     parser.add_argument(
@@ -375,16 +385,17 @@ def get_argparse():
 # BEGIN MAIN ==================================================================
 if __name__ == "__main__":
     args = get_argparse().parse_args()
-    raw_excel_file = args.rawexcelfile 
+    raw_excel_file = args.rawexcelfile
     # print sys.platform
 
     eepms = EepMergeSheets()
+    print args
     # If 'sheetnums' is not specified, print out the sheets in the src Excel file.
-    if args.sheetnums is None:
+    if not args.sheetnums:
         eepms.print_sheetnames(raw_excel_file)
         sys.exit(1)
-    
+
     # Create destination folders if needed
-    eepshared.create_required_dirs()   
-    
+    eeputil.create_required_dirs()
+
     eepms.combine_sheets(raw_excel_file, args.sheetnums)
