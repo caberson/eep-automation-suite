@@ -1,7 +1,7 @@
 #!/usr/bin/python2.7
 # coding=utf-8
 # -*- coding: utf-8 -*-
-# Copyright (C) 2011 Caber Chu
+# Copyright (C) 2015 Caber Chu
 
 import os
 
