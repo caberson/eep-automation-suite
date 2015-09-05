@@ -254,6 +254,12 @@ class EepMergeSheets:
                             status = status | self.check_student_name(
                                     sheet, student_names[:row_count], rx)
 
+                        if cx == sheet.colpos['student_donor_id']:
+                            tmp_status = self.STATUS_NORMAL
+                            if not cell_val:
+                                tmp_status = self.STATUS_ERROR
+                            status = status | tmp_status
+
                         # Check if graduation year is past current year
                         #print cell_val
                         if cx == sheet.colpos['graduation_year']:
@@ -274,7 +280,7 @@ class EepMergeSheets:
                         sh_new.write(
                             current_xlwt_excel_row_num,
                             current_column,
-                            eepshared.clean_text(cell_val),
+                            eeputil.clean_text(cell_val),
                             cell_style
                         )
 
@@ -374,7 +380,7 @@ def get_argparse():
         help='Source Excel file name (default: %(default)s)',
     )
     parser.add_argument(
-        'sheetnums',
+        '--sheetnums',
         nargs='*',
         type=int,
         help='Sheets numbers to merge.  Sheet number starts from 0.'
@@ -389,7 +395,6 @@ if __name__ == "__main__":
     # print sys.platform
 
     eepms = EepMergeSheets()
-    print args
     # If 'sheetnums' is not specified, print out the sheets in the src Excel file.
     if not args.sheetnums:
         eepms.print_sheetnames(raw_excel_file)
