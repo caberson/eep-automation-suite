@@ -30,13 +30,8 @@ def sort(raw_excel_file, sheet_index=0):
 		for x in row:
 			cell_val = x.value
 			tmp2.append(cell_val)
-			# print cell_val
-			# print len(cell_val)
 
-		# print tmp2
 		tmp.append(tmp2)
-
-	# print tmp
 
 	tmp.sort(key = lambda row: ([row[13], row[2], row[6]]))
 
