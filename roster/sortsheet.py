@@ -45,7 +45,8 @@ def get_new_wb():
 	column_titles = [
 		'region', 'location', 'school-na', 'student-name', 'sex', 'grad-yr',
 		'donor-id', 'donor-na', 'donate-amt', 'comment', 'ipt_odr_nr',
-		'auto-student-id', 'auto-donor-stu-cnt-id', 'scl-na-len'
+		'auto-student-id', 'auto-donor-stu-cnt-id', 'scl-na-len',
+		'student-label-name', 'student-name-extra',
     ]
 
 	for cx, column_title in enumerate(column_titles):
