@@ -36,6 +36,15 @@ import xlsstyles
 
 ROWS_USED_BY_HEADING = 3
 
+STUDENT_NAME_WHITELIST = [
+    u'(2013年)',
+    u'(2014年)',
+]
+
+STUDENT_NAME_BLACKLIST = [
+    u'(補信)',
+]
+
 
 # 0 based
 colpos = {
@@ -128,7 +137,8 @@ def combine_sheets(raw_excel_file, sheets):
     column_titles = [
         'region', 'location', 'school-na', 'student-name', 'sex', 'grad-yr',
         'donor-id', 'donor-na', 'donate-amt', 'comment', 'ipt_odr_nr',
-        'auto-student-id', 'auto-donor-stu-cnt-id', 'scl-na-len'
+        'auto-student-id', 'auto-donor-stu-cnt-id', 'scl-na-len',
+        'student-label-name', 'student-name-extra',
     ]
     # sheets = combine_sheet_numbers#  [int(x) for x in COMBINE_SHEET_NUMBERS.split(',')]
     #print sheets
@@ -161,6 +171,8 @@ def combine_sheets(raw_excel_file, sheets):
         except:
             columns = SHEET_COLUMNS['DEFAULT'];
 
+        main_columns_count = len(columns)
+
         # Get all student names first.  Used to check duplicates later.
         student_names = sheet.col_values(
             sheet.colpos['student_name'], excel_row_lo, excel_row_hi
@@ -190,7 +202,7 @@ def combine_sheets(raw_excel_file, sheets):
             )
             sh_new.write(
                 current_xlwt_excel_row_num,
-                len(columns) + 1,
+                main_columns_count + 1,
                 xlwt.Formula(formula)
             )
 
@@ -200,7 +212,7 @@ def combine_sheets(raw_excel_file, sheets):
             )
             sh_new.write(
                 current_xlwt_excel_row_num,
-                len(columns) + 2,
+                main_columns_count + 2,
                 xlwt.Formula(formula)
             )
 
@@ -208,9 +220,31 @@ def combine_sheets(raw_excel_file, sheets):
             # formula = 'LEN(C{})'.format(current_actual_excel_row_num)
             sh_new.write(
                 current_xlwt_excel_row_num,
-                len(columns) + 3,
+                main_columns_count + 3,
                 # xlwt.Formula(formula)
                 len(sheet.cell_value(rx, sheet.colpos['school']))
+            )
+
+            # student name
+            student_name = sheet.get_student_name(rx)
+            replaced = []
+            student_name = eeputil.remove_parenthesis_content(
+                student_name, replaced, STUDENT_NAME_WHITELIST, STUDENT_NAME_BLACKLIST
+            )
+            student_name_extra = u' '.join(replaced)
+            # write the student label name
+            sh_new.write(
+                current_xlwt_excel_row_num,
+                main_columns_count + 4,
+                eeputil.clean_text(student_name),
+                xlsstyles.STYLES['CHINESE']
+            )
+            # write the name's parenthesis content.
+            sh_new.write(
+                current_xlwt_excel_row_num,
+                main_columns_count + 5,
+                eeputil.clean_text(student_name_extra),
+                xlsstyles.STYLES['CHINESE']
             )
 
             for current_column, cx in enumerate(columns):
@@ -229,7 +263,8 @@ def combine_sheets(raw_excel_file, sheets):
                     # Student name error checking
                     if cx == sheet.colpos['student_name']:
                         status = status | check_student_name(
-                                sheet, student_names[:row_count], rx)
+                            sheet, student_names[:row_count], rx
+                        )
 
                     if cx == sheet.colpos['student_donor_id']:
                         tmp_status = STATUS_NORMAL
