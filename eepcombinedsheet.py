@@ -16,4 +16,6 @@ class EepCombinedSheet(EepSheet):
         'auto_student_number': 11,
         'auto_donor_student_count_number': 12,
         'school_name_length': 13,
+        'student_label_name': 14,
+        'student_name_extra': 15,
     }
