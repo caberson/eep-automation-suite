@@ -14,6 +14,9 @@ Steps
 * Create year{seasonLetter}_eep_combined.xls.
 	python eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/{year}{season}/{year}{season}_eep.xls --sheetnums {sheet_1_index} ... #0 based.
 
+	cd ~/Documents/eep/2012f
+  /Users/cc/Documents/eep/scripts/python_scripts/eep/eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/2012f/2012f_eep.xls 16,17
+
 * Open up x_eep_combined.xls, clean up(font problem if exists) and save using Excel program.
 	This forces calculation of formulas that can be used in the next step.
 
@@ -27,21 +30,12 @@ Steps
 	The file created automatically can't be used with mail merge for unknown reasons.
 
 * Create all the lists using:
-	python ~/Projects/eepListFiles/eep-generate-lists.py  ~/Documents/eep/2013s/2013s_eep_combined_sorted.xls
+	python ./eep-generate-lists.py  ~/Documents/eep/2013s/2013s_eep_combined_sorted.xls
 	This creates a document_inspection folder.
 
 
-# Example
-cd ~/Documents/eep/2012f
-/Users/cc/Documents/eep/scripts/python_scripts/eep/eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/2012f/2012f_eep.xls 16,17
 
-/Users/cc/Documents/eep/scripts/python_scripts/eep/eep-generate-lists.py  ~/Documents/eep/2012f/2012f_eep_combined_sorted.xls
-
-
-
-
-
-Open up student-labels.doc to generate label files.
+Open up tools/student-labels.doc to generate label files.
 NOTE: Use BiauKaiTee if possible.
 5. Use WORD older version. Use student-name-labels.docx to create student labels.  Avery 5164/8164 label template
 	 - Filter by schl_na_len
