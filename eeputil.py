@@ -52,8 +52,10 @@ def create_required_dirs():
 
 	create_dir_if_not_exists(eepshared.STUDENT_NAME_LABELS_DIR)
 
-def remove_parenthesis_content(val, replaced = []):
+def remove_parenthesis_content(val, replaced=[], whitelist=[], blacklist=[]):
 	"""Remove parenthesis and inner strings from an unicode string."""
+	check_len = 4
+
 	if type(val).__name__ in ['unicode']:
 		val = val.strip()
 		val = string.replace(val, "*", "")
@@ -61,12 +63,18 @@ def remove_parenthesis_content(val, replaced = []):
 		val = string.replace(val, u'（', '(')
 
 		if ')' in val:
+			blacklisted = any(x in val for x in blacklist)
+
+			if any(x in val for x in whitelist) and not blacklisted:
+				return val
+
 			myRE = re.compile(r'(\(.*\))', re.U | re.I)
 			m = myRE.findall(val)
 
 			# print "VAL:: " + val.encode(OUTPUT_ENCODING)
+			check_len = 2 if blacklisted else 4
 			if m:
-				if len(m[0]) > 4:
+				if len(m[0]) > check_len:
 					replaced.append(m[0])
 					#print '**', myRE.sub('', val)
 					val = myRE.sub('', val)
