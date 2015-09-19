@@ -82,13 +82,18 @@ class EepLists:
                 xlwt.Borders.THIN, xlwt.Borders.THIN, xlwt.Borders.THIN, xlwt.Borders.THIN
             )
         ),
+        'CELL_LISTING_CENTER': xlwt.easyxf(
+            u'font: name 宋体, height 240; align: wrap off, shrink_to_fit on, vert centre, horiz center; borders: left %d, right %d, top %d, bottom %d' % (
+                xlwt.Borders.THIN, xlwt.Borders.THIN, xlwt.Borders.THIN, xlwt.Borders.THIN
+            )
+        ),
         'CELL_LISTING_M1': xlwt.easyxf(
             u'font: name 宋体, height 260; align: wrap off, shrink_to_fit on, vert centre; borders: left %d, right %d, top %d, bottom %d' % (
                 xlwt.Borders.THIN, xlwt.Borders.THIN, xlwt.Borders.THIN, xlwt.Borders.THIN
             )
         ),
         'CELL_LISTING_WRAP': xlwt.easyxf(
-            u'font: name 宋体; align: wrap on, shrink_to_fit off, vert centre; borders: left %d, right %d, top %d, bottom %d' % (
+            u'font: name 宋体, height 240; align: wrap on, shrink_to_fit off, vert centre; borders: left %d, right %d, top %d, bottom %d' % (
                 xlwt.Borders.THIN, xlwt.Borders.THIN, xlwt.Borders.THIN, xlwt.Borders.THIN
             )
         ),
@@ -107,6 +112,8 @@ class EepLists:
         ),
     }
     CHAR_WIDTH = 256
+
+    DEFAULT_ROW_HEIGHT = math.trunc(2.7 * 255)
 
     # Source Excel heading rows.
     src_heading_rows = 1
@@ -363,14 +370,14 @@ class EepLists:
 
         cw = self.CHAR_WIDTH
         # Modify dynamic values
-        sh_new.col(0).width = math.trunc(4.1 * cw)
+        sh_new.col(0).width = math.trunc(6.15 * cw)
         # Student name column.
         sh_new.col(2).width = math.trunc(8 * cw)
         sh_new.col(5).width = math.trunc(5.5 * cw)
         # Donor name column.
         sh_new.col(6).width = math.trunc(18 * cw)
         # Comment column.  75 for office 2008 and 80 for office 2011
-        sh_new.col(8).width = math.trunc(78 * cw)
+        sh_new.col(8).width = math.trunc(76 * cw)
 
         sh_new.portrait = 0
         #sh_new.show_headers = 0
@@ -435,7 +442,7 @@ class EepLists:
             current_xlrd_excel_row_num = rx
             current_xlwt_excel_row_num = i + TGT_HEADING_ROWS
 
-            sh_new.row(current_xlwt_excel_row_num).height = math.trunc(2 * 255)
+            sh_new.row(current_xlwt_excel_row_num).height = self.DEFAULT_ROW_HEIGHT
             sh_new.row(current_xlwt_excel_row_num).height_mismatch = 1
 
             # Row id
@@ -492,11 +499,13 @@ class EepLists:
         sh_new.portrait = 0
         # Modify dynamic values
         cw = self.CHAR_WIDTH
-        sh_new.col(0).width = math.trunc(4.1 * cw)
-        sh_new.col(2).width = math.trunc(8 * cw) #student name
+        sh_new.col(0).width = math.trunc(6.15 * cw)
+        # student name
+        sh_new.col(2).width = math.trunc(8 * cw)
         sh_new.col(5).width = math.trunc(5.5 * cw)
-        sh_new.col(6).width = math.trunc(18 * cw) #donor name
-        sh_new.col(8).width = math.trunc(78 * cw)
+        # donor name
+        sh_new.col(6).width = math.trunc(18 * cw)
+        sh_new.col(8).width = math.trunc(76 * cw)
 
         sh_new.portrait = 0
 
@@ -550,18 +559,21 @@ class EepLists:
             current_xlrd_excel_row_num = rx
             current_xlwt_excel_row_num = i + TGT_HEADING_ROWS
 
-            sh_new.row(current_xlwt_excel_row_num).height = math.trunc(2 * 255)
+            sh_new.row(current_xlwt_excel_row_num).height = self.DEFAULT_ROW_HEIGHT
             sh_new.row(current_xlwt_excel_row_num).height_mismatch = 1
 
             # Row id
             studentIDColumn = 1
             sh_new.write(
-                current_xlwt_excel_row_num, studentIDColumn, i + 1, self.STYLES['CELL_LISTING']
+                current_xlwt_excel_row_num, studentIDColumn, i + 1, self.STYLES['CELL_LISTING_CENTER']
             )
 
             current_column = 0
             for cx in checklist_columns:
                 cell_style = self.STYLES['CELL_LISTING']
+                if cx in [sheet.colpos['student_donor_id']]:
+                    cell_style = self.STYLES['CELL_LISTING_CENTER']
+
                 if cx > 0:
                     cell_val = sheet.cell_value(current_xlrd_excel_row_num, cx)
 
@@ -608,11 +620,11 @@ class EepLists:
         cw = self.CHAR_WIDTH
         sh_new.col(0).width = math.trunc(4.1 * cw) #checkbox
         sh_new.col(1).width = math.trunc(4.1 * cw) #student id
-        sh_new.col(2).width = math.trunc(12 * cw)  #donor name
+        sh_new.col(2).width = math.trunc(10 * cw)  #donor name
         sh_new.col(5).width = math.trunc(4.5 * cw) #donor id
-        sh_new.col(6).width = math.trunc(20 * cw)  # donation amount
+        sh_new.col(6).width = math.trunc(22 * cw)  # donation amount
         sh_new.col(8).width = math.trunc(36 * cw)  # signature
-        sh_new.col(9).width = math.trunc(36 * cw)  # notes
+        sh_new.col(9).width = math.trunc(36.05 * cw)  # notes
 
         sh_new.set_header_margin(0)
         sh_new.set_footer_margin(0)
@@ -669,7 +681,7 @@ class EepLists:
             current_xlrd_excel_row_num = i + self.src_heading_rows
             current_xlwt_excel_row_num = i + TGT_HEADING_ROWS
 
-            sh_new.row(current_xlwt_excel_row_num).height = math.trunc(2 * 255)
+            sh_new.row(current_xlwt_excel_row_num).height = math.trunc(4 * 255)
             sh_new.row(current_xlwt_excel_row_num).height_mismatch = 1
 
             # row id
