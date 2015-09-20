@@ -37,14 +37,14 @@ def create_dir_if_not_exists(dir):
 
 # Create required dirs
 def create_required_dirs():
-	print eepshared.EEP_ROOT_DIR
+	print eepshared.EEP_DOC_DIR
 	print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR
 	print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'checkinglist'
 	print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'receivinglist'
 	print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'lettersubmitlist'
 	print eepshared.STUDENT_NAME_LABELS_DIR
 
-	create_dir_if_not_exists(eepshared.EEP_ROOT_DIR)
+	create_dir_if_not_exists(eepshared.EEP_DOC_DIR)
 	create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR)
 	create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'checkinglist')
 	create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'receivinglist')

@@ -12,7 +12,7 @@ from datetime import datetime
 import eeputil
 
 USER_DIR = eeputil.get_current_user_dir()
-EEP_ROOT_DIR = os.path.join(USER_DIR, 'Documents/eep')
+EEP_DOC_DIR = os.path.join(USER_DIR, 'Documents/eep')
 current_year = datetime.now().year
 current_month = datetime.now().month
 SUGGESTED_FILE_DESTINATION_FOLDER_NAME = ('/' + str(current_year) +
@@ -20,7 +20,7 @@ SUGGESTED_FILE_DESTINATION_FOLDER_NAME = ('/' + str(current_year) +
 SUGGESTED_RAW_EXCEL_FILE_BASE_NA = (str(current_year) +
 	('s' if current_month <= 6 else 'f') + '_eep')
 DESTINATION_DIR = (
-	EEP_ROOT_DIR +
+	EEP_DOC_DIR +
 	SUGGESTED_FILE_DESTINATION_FOLDER_NAME + '/'
 )
 
