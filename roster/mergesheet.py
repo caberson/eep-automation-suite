@@ -367,9 +367,13 @@ def mark_sections(sheet, rownum, colnum):
 def print_sheetnames(raw_excel_file):
     """Print sheet index number and it's name.
     """
-    wb_eep = xlrd.open_workbook(
-        raw_excel_file, on_demand=True, formatting_info=True
-    )
-    sheet_names = wb_eep.sheet_names()
-    for i, name in enumerate(sheet_names):
-        print i, name.strip().encode('utf-8')
+    try:
+        wb_eep = xlrd.open_workbook(
+            raw_excel_file, on_demand=True, formatting_info=True
+        )
+        sheet_names = wb_eep.sheet_names()
+        for i, name in enumerate(sheet_names):
+            print i, name.strip().encode('utf-8')
+    except:
+        print "Excel file not found: ", raw_excel_file
+        pass
