@@ -14,27 +14,15 @@ List out all sheets found in the Excel file.
 >>> ./eep-merge-sheets-from-raw-excel.py ~/Documents/eep/2011f/20114_eep.xls
 
 Merge sheet 11 and 12.  Sheets are 0 based.
->>> ./eep-merge_sheets-from-raw-excel.py ~/Documents/eep/2011f/20114_eep.xls 11 12
+>>> ./eep-merge_sheets-from-raw-excel.py ~/Documents/eep/2011f/20114_eep.xls --sheetnums 11 12
 """
 
 # Standard module imports.
 import sys
 import os
-import string
 import math
-from decimal import *
-from datetime import datetime
 
 # 3rd party module imports.
-import xlrd
-import xlwt
-from xlwt import easyxf
-import xlutils
-from xlutils.styles import Styles
-from xlutils.display import quoted_sheet_name
-from xlutils.display import cell_display
-from xlutils.copy import copy
-from xlutils.save import save
 
 # Custom module imports.
 import eepshared
