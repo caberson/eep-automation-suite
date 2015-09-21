@@ -1,0 +1,12 @@
+python:
+  container_name: eep_python
+  build: ./docker
+  working_dir: /app
+  entrypoint: python
+  environment:
+   EEP_DOC_DIR: /app-data
+  volumes:
+   - ./:/app
+   - /Users/cc/Documents/eep/:/app-data
+  #command: ./eep-merge-sheets-from-raw-excel.py
+
