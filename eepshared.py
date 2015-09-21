@@ -12,7 +12,10 @@ from datetime import datetime
 import eeputil
 
 USER_DIR = eeputil.get_current_user_dir()
-EEP_DOC_DIR = os.path.join(USER_DIR, 'Documents/eep')
+EEP_DOC_DIR = os.getenv(
+    'EEP_DOC_DIR',
+    os.path.join(USER_DIR, 'Documents/eep')
+)
 current_year = datetime.now().year
 current_month = datetime.now().month
 SUGGESTED_FILE_DESTINATION_FOLDER_NAME = ('/' + str(current_year) +
