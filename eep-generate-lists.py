@@ -434,6 +434,12 @@ class EepLists:
             0, 0, 7, 8, yr_title, self.STYLES['CELL_LISTING_TITLE']
         )
 
+        # Centered columns
+        centered_columns = [
+            sheet.colpos['sex'],
+            sheet.colpos['graduation_year'],
+        ]
+
         # Total rows processed so far
         i = 0
         for rx in range(row_lo, row_hi + 1):
@@ -454,7 +460,11 @@ class EepLists:
 
             current_column = 0
             for cx in lettersubmitlist_columns:
-                cell_style = self.STYLES['CELL_LISTING']
+                if cx in centered_columns:
+                    cell_style = self.STYLES['CELL_LISTING_CENTER']
+                else:
+                    cell_style = self.STYLES['CELL_LISTING']
+
                 if cx > 0:
                     cell_val = sheet.cell_value(current_xlrd_excel_row_num, cx)
 
@@ -553,6 +563,13 @@ class EepLists:
         yr_title = SHEET_TITLE_BASE + u'對口救助學生名冊'
         sh_new.write_merge(0, 0, 7, 8, yr_title, self.STYLES['CELL_LISTING_TITLE'])
 
+        # Centered columns
+        centered_columns = [
+            sheet.colpos['sex'],
+            sheet.colpos['graduation_year'],
+            # sheet.colpos['student_donor_id']
+        ]
+
         i = 0   # total rows processed so far
         for rx in range(row_lo, row_hi + 1): #sh.nrows
             current_actual_excel_row_num = i + 3 #1 for heading and 1 for actual cell number
@@ -570,9 +587,10 @@ class EepLists:
 
             current_column = 0
             for cx in checklist_columns:
-                cell_style = self.STYLES['CELL_LISTING']
-                if cx in [sheet.colpos['student_donor_id']]:
+                if cx in centered_columns:
                     cell_style = self.STYLES['CELL_LISTING_CENTER']
+                else:
+                    cell_style = self.STYLES['CELL_LISTING']
 
                 if cx > 0:
                     cell_val = sheet.cell_value(current_xlrd_excel_row_num, cx)
@@ -618,13 +636,14 @@ class EepLists:
 
         # Modify dynamic values
         cw = self.CHAR_WIDTH
-        sh_new.col(0).width = math.trunc(4.1 * cw) #checkbox
+        sh_new.col(0).width = math.trunc(6.15 * cw) #checkbox
         sh_new.col(1).width = math.trunc(4.1 * cw) #student id
         sh_new.col(2).width = math.trunc(10 * cw)  #donor name
+        sh_new.col(4).width = math.trunc(5 * cw)  #year
         sh_new.col(5).width = math.trunc(4.5 * cw) #donor id
         sh_new.col(6).width = math.trunc(22 * cw)  # donation amount
         sh_new.col(8).width = math.trunc(36 * cw)  # signature
-        sh_new.col(9).width = math.trunc(36.05 * cw)  # notes
+        sh_new.col(9).width = math.trunc(30.05 * cw)  # notes
 
         sh_new.set_header_margin(0)
         sh_new.set_footer_margin(0)
@@ -675,6 +694,12 @@ class EepLists:
         yr_title = SHEET_TITLE_BASE + u'對口救助學生名冊'
         sh_new.write_merge(0, 0, 7, 9, yr_title, self.STYLES['CELL_LISTING_TITLE'])
 
+        # Centered columns
+        centered_columns = [
+            sheet.colpos['sex'],
+            sheet.colpos['graduation_year'],
+        ]
+
         i = 0   # total rows processed so far
         for rx in range(row_lo, row_hi + 1): #sh.nrows
             current_actual_excel_row_num = i + 3 #1 for heading and 1 for actual cell number
@@ -686,12 +711,16 @@ class EepLists:
 
             # row id
             sh_new.write(
-                current_xlwt_excel_row_num, 1, i+1, self.STYLES['CELL_LISTING']
+                current_xlwt_excel_row_num, 1, i+1, self.STYLES['CELL_LISTING_CENTER']
             )
 
             current_column = 0
             for cx in receivinglist_columns:
-                cell_style = self.STYLES['CELL_LISTING']
+                if cx in centered_columns:
+                    cell_style = self.STYLES['CELL_LISTING_CENTER']
+                else:
+                    cell_style = self.STYLES['CELL_LISTING']
+
                 if cx > 0:
                     #print i, ":", x
                     cell_val = sheet.cell_value(rx, cx)
