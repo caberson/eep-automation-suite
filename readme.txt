@@ -15,7 +15,7 @@ Steps
 	python eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/{year}{season}/{year}{season}_eep.xls --sheetnums {sheet_1_index} ... #0 based.
 
 	cd ~/Documents/eep/2012f
-  /Users/cc/Documents/eep/scripts/python_scripts/eep/eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/2012f/2012f_eep.xls 16,17
+  /Users/cc/Documents/eep/scripts/python_scripts/eep/eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/2012f/2012f_eep.xls --sheetnums 29 30
 
 * Open up x_eep_combined.xls, clean up(font problem if exists) and save using Excel program.
 	This forces calculation of formulas that can be used in the next step.
