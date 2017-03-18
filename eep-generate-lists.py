@@ -219,7 +219,9 @@ class EepLists:
         column_titles_len = len(column_titles)
 
         columns = [
-            COL_AUTO_STUDENT_NUMBER, COL_STUDENT_LABEL_NAME, COL_SEX,
+            COL_AUTO_STUDENT_NUMBER,
+            COL_STUDENT_LABEL_NAME,
+            COL_SEX,
             COL_GRADUATION_YEAR, COL_STUDENT_DONOR_ID, COL_STUDENT_DONOR_NAME,
             COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL, COL_COMMENT
         ]
@@ -240,8 +242,8 @@ class EepLists:
         sheet_range = xrange(self.data_sheet_row_lo, self.data_sheet_row_hi)
         sheet = self.data_sheet
         name_columns = [
-            sheet.colpos['student_name'],
-            sheet.colpos['student_donor_name']
+            sheet.colpos['student_name']
+            #sheet.colpos['student_donor_name']
         ]
         for current_row_count, rx in enumerate(sheet_range):
             #print current_row_count, ' ', rx
@@ -281,8 +283,8 @@ class EepLists:
             for current_column, cx in enumerate(columns):
                 cell_val = sheet.cell_value(current_xlrd_excel_row_num, cx)
 
-                if cx in name_columns:
-                    cell_val = eeputil.remove_parenthesis_content(cell_val)
+                # if cx in name_columns:
+                #    cell_val = eeputil.remove_parenthesis_content(cell_val)
 
                 if cx == sheet.colpos['comment']:
                     cell_style = self.STYLES['CELL_LISTING_WRAP']
@@ -419,6 +421,12 @@ class EepLists:
             sheet.colpos['student_label_name'],
         ]
 
+        centered_columns = [
+            sheet.colpos['student_donor_id'],
+            sheet.colpos['sex'],
+        ]
+
+
         # Title
         region = sheet.get_region(row_lo)
         location = sheet.get_location(row_lo)
@@ -455,6 +463,8 @@ class EepLists:
             current_column = 0
             for cx in lettersubmitlist_columns:
                 cell_style = self.STYLES['CELL_LISTING']
+                if cx in centered_columns:
+                    cell_style = self.STYLES['CELL_LISTING_CENTER']
                 if cx > 0:
                     cell_val = sheet.cell_value(current_xlrd_excel_row_num, cx)
 
@@ -462,6 +472,8 @@ class EepLists:
                         cell_val = eeputil.remove_parenthesis_content(cell_val)
                     else:
                         cell_style = self.STYLES['CELL_LISTING_WRAP']
+
+
 
                     # If name column
                     if cx in [sheet.colpos['student_label_name']]:
@@ -542,6 +554,11 @@ class EepLists:
             sheet.colpos['student_label_name'],
         ]
 
+        centered_columns = [
+            sheet.colpos['student_donor_id'],
+            sheet.colpos['sex']
+        ]
+
         # Title
         region = sheet.get_region(row_lo)
         location = sheet.get_location(row_lo)
@@ -571,7 +588,7 @@ class EepLists:
             current_column = 0
             for cx in checklist_columns:
                 cell_style = self.STYLES['CELL_LISTING']
-                if cx in [sheet.colpos['student_donor_id']]:
+                if cx in centered_columns:
                     cell_style = self.STYLES['CELL_LISTING_CENTER']
 
                 if cx > 0:
@@ -662,6 +679,11 @@ class EepLists:
             sheet.colpos['student_label_name'],
         ]
 
+        centered_columns = [
+            sheet.colpos['student_donor_id'],
+            sheet.colpos['sex'],
+        ]
+
         # Title
         region = sheet.get_region(row_lo)
         location = sheet.get_location(row_lo)
@@ -692,6 +714,9 @@ class EepLists:
             current_column = 0
             for cx in receivinglist_columns:
                 cell_style = self.STYLES['CELL_LISTING']
+                if cx in centered_columns:
+                    cell_style = self.STYLES['CELL_LISTING_CENTER']
+
                 if cx > 0:
                     #print i, ":", x
                     cell_val = sheet.cell_value(rx, cx)
