@@ -2,6 +2,7 @@ Steps
 ======================
 * (Now optional) Init a directory for season.
 	python eep_shared.py
+	This creates a document_inspection folder.
 
 * Make sure ROWS_USED_BY_HEADING in "eep-merge-sheets-from-raw-excel.py" is correct.  Default is 3.
 
@@ -15,7 +16,9 @@ Steps
 	python eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/{year}{season}/{year}{season}_eep.xls --sheetnums {sheet_1_index} ... #0 based.
 
 	cd ~/Documents/eep/2012f
-  /Users/cc/Documents/eep/scripts/python_scripts/eep/eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/2012f/2012f_eep.xls --sheetnums 29 30
+	/Users/cc/Projects/eep/eep-merge-sheets-from-raw-excel.py ~/Documents/eep/2017s/2017s_eep.xls --sheetnums 31 32
+
+    /Users/cc/Documents/eep/scripts/python_scripts/eep/eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/2012f/2012f_eep.xls --sheetnums 29 30
 
 * Open up x_eep_combined.xls, clean up(font problem if exists) and save using Excel program.
 	This forces calculation of formulas that can be used in the next step.
@@ -26,12 +29,16 @@ Steps
 	donor-id
 	Save as x_eep_combined_sorted.xls
 
+	Clean up student-label-name column as needed.
+
 * Open up x_eep_combined.xls in Excel and resave the file.
 	The file created automatically can't be used with mail merge for unknown reasons.
 
 * Create all the lists using:
+	-- If no Excel file is specified, application will attempt to look for current season's file.
+	/Users/cc/Projects/eep/eep-generate-lists.py
+
 	python ./eep-generate-lists.py  ~/Documents/eep/2013s/2013s_eep_combined_sorted.xls
-	This creates a document_inspection folder.
 
 
 
