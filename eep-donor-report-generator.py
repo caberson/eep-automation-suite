@@ -526,7 +526,6 @@ if __name__ == '__main__':
     # DIR_PHOTOS_CROPPED = dir.DIR_EEP_PHOTOS_CROPPED_DEFAULT
     DIR_PHOTOS_CROPPED = DIR_EEP_PHOTOS_CROPPED
     print DIR_PHOTOS_CROPPED
-    sys.exit(0)
 
     log_file = os.path.join(DIR_OUTPUT, 'log.txt')
     try:
