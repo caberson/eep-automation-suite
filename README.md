@@ -10,11 +10,17 @@ While these tools work, they do require a LOT of cleanup and refactoring.
 Requirements
 ===============
 * Python 2.7.
-* xlrd, xlwt and xlutils library.  
-  Source: https://pypi.python.org/pypi/xlrd  
-          https://pypi.python.org/pypi/xlwt  
-          https://pypi.python.org/pypi/xlutils  
+* xlrd, xlwt and xlutils library.
+  Source: https://pypi.python.org/pypi/xlrd
+          https://pypi.python.org/pypi/xlwt
+          https://pypi.python.org/pypi/xlutils
 
+Tool Specific Requirements
+===============
+* donor-report-generator.py
+  - Requires MS Office installed.
+  - Windows (tested with Windows 7) as it uses Windows COM APIs to automate Word
+    file creation.
 
 Usage
 ===============
