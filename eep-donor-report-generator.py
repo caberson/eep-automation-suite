@@ -28,9 +28,9 @@ if local_site_packages_folder not in sys.path and os.path.exists(local_site_pack
 #==============================================================================
 
 
-from eep import common
-import clearcubic.utility
-
+# from eep import common
+import dir
+import util.dir
 
 # Word COM reference
 # http://msdn.microsoft.com/en-us/library/bb244515(v=office.12).aspx
@@ -65,7 +65,7 @@ STUDENTS_PER_ROW = 3
 
 # TODO: Confirm if we can use template-donor-report-docx
 FILE_DONORREPORT_TEMPLATE_FILENAME = os.path.join(
-    common.DIR_TEMPLATES, 'template-donor-report.doc'
+    dir.DIR_TEMPLATES, 'template-donor-report.doc'
 )
 # print FILE_DONORREPORT_TEMPLATE_FILENAME
 
@@ -77,9 +77,9 @@ def getWordHandle():
 
 def getEepExcelSheet(intSheetIndex=0):	#0 based
     xls_file_na = '%s_eep_combined_sorted.xls' % (REPORT_YEAR_CODE_ENG)
-    print common.DIR_ASSETS
+    print dir.DIR_ASSETS
     #wb_eep = xlrd.open_workbook(os.getcwd() + '/assets/2011f_eep_combined.xls', on_demand=True, formatting_info=True)
-    wb_eep = xlrd.open_workbook(os.path.join(common.DIR_ASSETS, xls_file_na), on_demand=True, formatting_info=True)
+    wb_eep = xlrd.open_workbook(os.path.join(dir.DIR_ASSETS, xls_file_na), on_demand=True, formatting_info=True)
     sh_eep = wb_eep.sheet_by_index(intSheetIndex)
     # print xls_file_na
     return sh_eep
@@ -466,7 +466,7 @@ def setup_argparse():
 
 def main(args):
     # init dir
-    clearcubic.utility.create_directories([
+    util.dir.create_directories([
         DIR_OUPUT_WORD_FILES,
         DIR_EEP_PHOTOS_ORIGINAL,
         DIR_EEP_PHOTOS_CROPPED,
@@ -515,17 +515,18 @@ if __name__ == '__main__':
     REPORT_SEASON_ENG = 'f' if REPORT_MONTH > 8 else 's'
     REPORT_YEAR_CODE_ENG = '%s%s' % (REPORT_YEAR, REPORT_SEASON_ENG)
 
-    DIR_OUTPUT = os.path.join(common.DIR_DATA, REPORT_YEAR_CODE_ENG)
+    DIR_OUTPUT = os.path.join(dir.DIR_DATA, REPORT_YEAR_CODE_ENG)
     DIR_OUPUT_WORD_FILES = os.path.join(DIR_OUTPUT, '_donor-reports')
     DIR_EEP_PHOTOS_ORIGINAL = os.path.join(
-        DIR_OUTPUT, common.PHOTOS_ORIGINAL_FOLDER_NAME
+        DIR_OUTPUT, dir.PHOTOS_ORIGINAL_FOLDER_NAME
     )
     DIR_EEP_PHOTOS_CROPPED = os.path.join(
-        DIR_OUTPUT, common.PHOTOS_CROPPED_FOLDER_NAME
+        DIR_OUTPUT, dir.PHOTOS_CROPPED_FOLDER_NAME
     )
-    # DIR_PHOTOS_CROPPED = common.DIR_EEP_PHOTOS_CROPPED_DEFAULT
+    # DIR_PHOTOS_CROPPED = dir.DIR_EEP_PHOTOS_CROPPED_DEFAULT
     DIR_PHOTOS_CROPPED = DIR_EEP_PHOTOS_CROPPED
     print DIR_PHOTOS_CROPPED
+    sys.exit(0)
 
     log_file = os.path.join(DIR_OUTPUT, 'log.txt')
     try:
