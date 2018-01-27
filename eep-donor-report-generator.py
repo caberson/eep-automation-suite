@@ -530,11 +530,16 @@ if __name__ == '__main__':
     log_file = os.path.join(DIR_OUTPUT, 'log.txt')
     try:
         LOG = open(log_file, 'w')
+    except:
+        pass
+
+    try:
+        # LOG = open(log_file, 'w')
         LOG.write(''.join(['Log file for ', REPORT_YEAR_CODE_ENG, "\n"]))
     except:
         print 'error'
         pass
 
-    main(args)
+    # main(args)
 
     LOG.close()
