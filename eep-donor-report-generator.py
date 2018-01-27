@@ -534,12 +534,11 @@ if __name__ == '__main__':
         pass
 
     try:
-        # LOG = open(log_file, 'w')
         LOG.write(''.join(['Log file for ', REPORT_YEAR_CODE_ENG, "\n"]))
     except:
         print 'error'
         pass
 
-    # main(args)
+    main(args)
 
     LOG.close()
