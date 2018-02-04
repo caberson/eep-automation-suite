@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding=utf-8
 # -*- coding: utf-8 -*-
 # Copyright (C) 2011 Caber Chu
@@ -20,26 +20,22 @@ Merge sheet 11 and 12.  Sheets are 0 based.
 # Standard module imports.
 import sys
 import os
-import math
 
 # 3rd party module imports.
 
 # Custom module imports.
 import eepshared
 import eeputil
-from eepsheet import EepSheet
 
 import roster.sortsheet
 import roster.mergesheet
-import xlsstyles
-
 
 def get_argparse():
     """Get cmd line argument parser.
     """
     import argparse
     parser = argparse.ArgumentParser(
-            description='Merges Excel sheets into a new file.')
+        description='Merges Excel sheets into a new file.')
     default_excel_file_na = '{}.xls'.format(
         eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA
     )
@@ -62,8 +58,9 @@ def get_argparse():
 
     return parser
 
-# BEGIN MAIN ==================================================================
-if __name__ == "__main__":
+def main():
+    """Main runner if invoked directly
+    """
     parser = get_argparse()
     args = parser.parse_args()
     raw_excel_file = args.rawexcelfile
@@ -85,3 +82,9 @@ if __name__ == "__main__":
     data = roster.sortsheet.sort(out_file)
     sorted_out_file = roster.sortsheet.save(data)
     print "Out file (sorted): ", sorted_out_file
+
+
+# BEGIN MAIN ==================================================================
+if __name__ == "__main__":
+    main()
+    
