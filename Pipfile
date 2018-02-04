@@ -1,5 +1,7 @@
 [requires]
+
 python_version = "2.7"
+
 
 [[source]]
 
@@ -12,6 +14,7 @@ name = "pypi"
 
 xlrd = "*"
 xlwt = "*"
+xlutils = "*"
 
 
 [dev-packages]
