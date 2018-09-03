@@ -49,9 +49,11 @@ NOTE: Use BiauKaiTee if possible.
 	 - Merge to new document
 	 - Inspect new document
 	 - Save as PDF to _toPrint/student-labels as student-labels-0Xschar.pdf
+	 - Notes:
+	 - If update label is grayed out, make sure mail merge type is "label".  
 
 	regular name length, use 48pt
-	if long names, use 26pt
+	if long names, use 26pt 
 	- Letters / Pt Size (新細明體):
 	- 4 / 60pt
 	- 5 / 49pt
