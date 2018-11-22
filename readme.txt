@@ -1,5 +1,7 @@
 Steps
 ======================
+* pipenv shell
+
 * (Now optional) Init a directory for season.
 	python eep_shared.py
 	This creates a document_inspection folder.
@@ -36,8 +38,6 @@ Steps
 
 * Create all the lists using:
 	-- If no Excel file is specified, application will attempt to look for current season's file.
-	/Users/cc/Projects/eep/eep-generate-lists.py
-
 	python ./eep-generate-lists.py  ~/Documents/eep/2013s/2013s_eep_combined_sorted.xls
 
 
