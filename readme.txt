@@ -2,6 +2,8 @@ Steps
 ======================
 * pipenv shell
 
+* cd src
+
 * (Now optional) Init a directory for season.
 	python eep_shared.py
 	This creates a document_inspection folder.

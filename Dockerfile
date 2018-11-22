@@ -1,9 +1,17 @@
-FROM python:2.7-alpine
+FROM python:2.7-alpine as base
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+FROM base as builder
 
-COPY requirements.txt /usr/src/app/
-RUN pip install --no-cache-dir -r requirements.txt
+RUN mkdir /install
+WORKDIR /install
 
-COPY . /usr/src/app
+COPY ./requirements.txt requirements.txt
+RUN pip install --install-option="--prefix=/install" -r requirements.txt
+
+FROM base
+
+COPY --from=builder /install /usr/local
+COPY ./src /app
+COPY ./templates /app/templates
+
+WORKDIR /app

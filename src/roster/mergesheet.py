@@ -117,7 +117,7 @@ STATUS_ERROR = 2
 #
 # create a new file
 #
-def combine_sheets(raw_excel_file, sheets):
+def combine_sheets(raw_excel_file, sheets, out_file_name=None):
     excel_row_lo = ROWS_USED_BY_HEADING
 
     try:
@@ -299,12 +299,13 @@ def combine_sheets(raw_excel_file, sheets):
             i += 1
     print 'Total Students: ', total_rows_combined
 
-    out_file = os.path.join(
-        eepshared.DESTINATION_DIR,
-        eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
-    )
-    wb_new.save(out_file)
-    return out_file
+    if out_file_name is None:
+        out_file = os.path.join(
+            eepshared.DESTINATION_DIR,
+            eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
+        )
+    wb_new.save(out_file_name)
+    return out_file_name
 
 def check_student_name(sheet, student_names, rownum):
     """ Checks whether a student name exists before the rownum.
