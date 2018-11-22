@@ -68,14 +68,14 @@ def main():
     print("Destination Folder: %s" % eepshared.DESTINATION_DIR)
     # print sys.platform
 
+    # Create destination folders if needed
+    eeputil.create_required_dirs()
+
     # If 'sheetnums' is not specified, print out the sheets in the src Excel file.
     if not args.sheetnums:
         parser.print_help()
         roster.mergesheet.print_sheetnames(raw_excel_file)
         sys.exit(1)
-
-    # Create destination folders if needed
-    eeputil.create_required_dirs()
 
     # Generate merged file
     out_file_name = os.path.join(
