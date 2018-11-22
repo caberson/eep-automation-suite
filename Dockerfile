@@ -12,5 +12,6 @@ FROM base
 
 COPY --from=builder /install /usr/local
 COPY ./src /app
+COPY ./templates /app/templates
 
 WORKDIR /app
