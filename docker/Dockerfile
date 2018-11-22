@@ -1,18 +1,16 @@
-FROM alpine:3.2
-MAINTAINER Caber Chu
+FROM python:2.7-alpine as base
 
-RUN apk add --update \
-	python \
-	py-pip \
-    && rm -rf /var/cache/apk/* \
-    && pip install --upgrade \
-    pip
+FROM base as builder
 
-RUN mkdir /app
+RUN mkdir /install
+WORKDIR /install
+
+COPY ./docker/requirements.txt requirements.txt
+RUN pip install --install-option="--prefix=/install" -r requirements.txt
+
+FROM base
+
+COPY --from=builder /install /usr/local
+COPY src /app
+
 WORKDIR /app
-COPY requirements.txt /app/
-
-
-RUN /usr/bin/pip install -r /app/requirements.txt
-
-ENTRYPOINT ["python"]
