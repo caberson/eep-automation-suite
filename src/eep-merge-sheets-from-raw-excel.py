@@ -64,6 +64,8 @@ def main():
     parser = get_argparse()
     args = parser.parse_args()
     raw_excel_file = args.rawexcelfile
+    print("Excel File: %s" % raw_excel_file)
+    print("Destination Folder: %s" % eepshared.DESTINATION_DIR)
     # print sys.platform
 
     # If 'sheetnums' is not specified, print out the sheets in the src Excel file.
@@ -75,16 +77,28 @@ def main():
     # Create destination folders if needed
     eeputil.create_required_dirs()
 
-    out_file = '/Users/cc/Documents/eep/2015f/2015f_eep_combined.xls'
-    out_file = roster.mergesheet.combine_sheets(raw_excel_file, args.sheetnums)
-    print "Out file:", out_file
+    # Generate merged file
+    out_file_name = os.path.join(
+        eepshared.DESTINATION_DIR,
+        eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
+    )
+    combined_file = roster.mergesheet.combine_sheets(
+        raw_excel_file,
+        args.sheetnums,
+        out_file_name
+    )
+    print("Output file: %s" % combined_file)
 
-    data = roster.sortsheet.sort(out_file)
-    sorted_out_file = roster.sortsheet.save(data)
-    print "Out file (sorted): ", sorted_out_file
+    # Generate
+    data = roster.sortsheet.sort(combined_file)
+    out_file_name = os.path.join(
+        eepshared.DESTINATION_DIR,
+        eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined_sorted.xls'
+    )
+    sorted_icombined_out_file = roster.sortsheet.save(data, out_file_name)
+    print("Output file (sorted): %s" % sorted_icombined_out_file)
 
 
 # BEGIN MAIN ==================================================================
 if __name__ == "__main__":
     main()
-    
