@@ -10,9 +10,6 @@ import re
 from datetime import datetime
 import eepshared
 
-def get_current_user_dir():
-	return os.path.expanduser('~')
-
 def clean_text(val):
 	#print isinstance(val)
 	if type(val).__name__ in ['unicode']:
@@ -43,6 +40,8 @@ def create_required_dirs():
 	print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'receivinglist'
 	print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'lettersubmitlist'
 	print eepshared.STUDENT_NAME_LABELS_DIR
+	print eepshared.STUDENT_PHOTOS_ORIGINAL_DIR
+	print eepshared.STUDENT_PHOTOS_CROPPED_DIR
 
 	create_dir_if_not_exists(eepshared.EEP_DOC_DIR)
 	create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR)
@@ -51,6 +50,9 @@ def create_required_dirs():
 	create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'lettersubmitlist')
 
 	create_dir_if_not_exists(eepshared.STUDENT_NAME_LABELS_DIR)
+
+	create_dir_if_not_exists(eepshared.STUDENT_PHOTOS_ORIGINAL_DIR)
+	create_dir_if_not_exists(eepshared.STUDENT_PHOTOS_CROPPED_DIR)
 
 def remove_parenthesis_content(val, replaced=[], whitelist=[], blacklist=[]):
 	"""Remove parenthesis and inner strings from an unicode string."""

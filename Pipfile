@@ -12,6 +12,7 @@ name = "pypi"
 
 [packages]
 
+opencv-python = "*"
 xlrd = "*"
 xlwt = "*"
 xlutils = "*"

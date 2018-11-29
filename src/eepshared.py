@@ -10,8 +10,9 @@ import re
 from datetime import datetime
 
 import eeputil
+import dir
 
-USER_DIR = eeputil.get_current_user_dir()
+USER_DIR = os.path.expanduser('~')
 EEP_DOC_DIR = os.getenv(
     'EEP_DOC_DIR',
     os.path.join(USER_DIR, 'Documents/eep')
@@ -31,9 +32,9 @@ INSPECTION_DOCUMENTS_DESTINATION_DIR = DESTINATION_DIR + 'documents_inspection/'
 
 STUDENT_NAME_LABELS_DIR = DESTINATION_DIR + 'student_name_labels/'
 
+STUDENT_PHOTOS_ORIGINAL_DIR = DESTINATION_DIR + dir.PHOTOS_ORIGINAL_FOLDER_NAME
+STUDENT_PHOTOS_CROPPED_DIR = DESTINATION_DIR + dir.PHOTOS_CROPPED_FOLDER_NAME
+
 OUTPUT_ENCODING = 'utf-8'
 if sys.platform == 'win32':
 	OUTPUT_ENCODING = 'big5'
-
-if __name__ == "__main__":
-	create_required_dirs()
