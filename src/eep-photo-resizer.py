@@ -22,14 +22,15 @@ if local_site_packages_folder not in sys.path and os.path.exists(local_site_pack
 #==============================================================================
 
 ### local site-packages includes starts
-from eep import common
-import clearcubic.utility
+# from eep import common
+# import clearcubic.utility
+import eepshared
 
 DIR_CURRENT_EXECUTABLE = os.path.dirname(sys.executable)
 IMAGE_MAGIC_EXE = os.path.join(DIR_CURRENT_EXECUTABLE, "..", "ImageMagick-6.7.3", "convert.exe")
 print IMAGE_MAGIC_EXE
 DEFAULT_OUTPUT_PATH = os.path.join(
-    'c:\projects\eep\data\_tmp',
+    'c:\projects\eep-automation-suite\data\2018s\eep_photos_cropped',
     ''
 )
 
@@ -45,8 +46,7 @@ def resize_photos_for_donor_doc(photos_path, out_path):
         dir_cwd_path = os.path.abspath(os.getcwd())
         photos_path = os.path.join(
             dir_cwd_path,
-            common.DIR_EEP_PHOTOS_CROPPED_DEFAULT,
-            # '_ori'
+            eepshared.DIR_EEP_PHOTOS_CROPPED_DEFAULT,
         )
 
     pattern = os.path.join(photos_path, '*.jpg')
@@ -73,11 +73,11 @@ if __name__ == '__main__':
     # python eep-photo-resizer.py -p C:\projects\eep\data\2017f\eep_photos_cropped_original -o C:\projects\eep\data\2017f\eep_photos_cropped
     # TODO: Need to remove the hard defined path below.
     src_photos_path = os.path.join(
-        'C:\projects\eep\data\_to_resize',
+        'C:\projects\eep-automation-suite\data\_to_resize',
         ''
     )
     output_path = os.path.join(
-        'C:\projects\eep\data\\2017f\eep_photos_cropped',
+        'C:\projects\eep-automation-suite\data\\2017f\eep_photos_cropped',
         ''
     )
 
