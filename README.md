@@ -17,10 +17,21 @@ Requirements
 
 Tool Specific Requirements
 ===============
-* donor-report-generator.py
+* eep-donor-report-generator.py
   - Requires MS Office installed.
   - Windows (tested with Windows 7) as it uses Windows COM APIs to automate Word
     file creation.
+
+Available Scripts
+===============
+* src/
+    * eep-donor-report-generator.py (Windows only)
+    * eep-generate-lists.py
+    * eep-merge-sheets-from-raw-excel.py
+    * eep-photo-cropper.py
+
+Either do pipenv shell first and invoke the individual scripts.
+Or use `pipenv run`. e.g. pipenv run python src/eep-photo-cropper.py
 
 Usage
 ===============
