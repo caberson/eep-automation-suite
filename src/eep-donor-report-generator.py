@@ -343,7 +343,7 @@ def updateDonorWordDoc(donor, studentList, word=None):
         bQuitWordApplicationAtEnd = True
 
     croppedStudentPhotoForDonor = glob(
-        os.path.join(DIR_PHOTOS_CROPPED, str(donorID).zfill(4) + '*.*')
+        os.path.join(PHOTOS_CROPPED_DIR, str(donorID).zfill(4) + '*.*')
     )
     numberOfStudentsForDonor = len(studentList)
     totalSlotsNeeded = numberOfStudentsForDonor
@@ -359,7 +359,7 @@ def updateDonorWordDoc(donor, studentList, word=None):
     for studentSlot, studentInfo in enumerate(studentList):
         studentDonorID, studentName, studentSchool = studentInfo
         studentPhotoFN = os.path.join(
-            DIR_PHOTOS_CROPPED,
+            PHOTOS_CROPPED_DIR,
             str(donorID).zfill(4) + '-' + str(studentSlot + 1).zfill(2) + '.jpg'
         )
         if not os.path.isfile(studentPhotoFN):
@@ -399,7 +399,7 @@ def updateDonorWordDoc(donor, studentList, word=None):
 
     if OPTION_CREATE_WORD_DOC:
         # save
-        targetFileName = os.path.join(DIR_OUPUT_WORD_FILES, str(donorID) + '.doc') #os.path.join(os.getcwd(), '_donor-reports-processed', str(donorID) + '.doc')
+        targetFileName = os.path.join(eepshared.DONOR_REPORT_DIR, str(donorID) + '.doc') #os.path.join(os.getcwd(), '_donor-reports-processed', str(donorID) + '.doc')
         print targetFileName
         # targetFileName = os.getcwd() + '/assets/test.doc'
         activeDocument = word.ActiveDocument
@@ -470,7 +470,7 @@ def setup_argparse():
 
 def main(args):
     print 'beg: ', datetime.now()
-    processWordDocs()
+    # processWordDocs()
     print 'end: ', datetime.now()
 
 if __name__ == '__main__':
@@ -507,9 +507,7 @@ if __name__ == '__main__':
         REPORT_MONTH = args.month
     REPORT_SEASON = u'秋' if REPORT_MONTH > 8 else u'春'
     REPORT_YEAR_CODE_ENG = eepshared.build_english_year_code(REPORT_YEAR, REPORT_MONTH)
-
-    DIR_EEP_PHOTOS_CROPPED = eepshared.STUDENT_PHOTOS_CROPPED_DIR
-    DIR_PHOTOS_CROPPED = DIR_EEP_PHOTOS_CROPPED
+    PHOTOS_CROPPED_DIR = eepshared.STUDENT_PHOTOS_CROPPED_DIR
 
     # init dir
     eeputil.create_required_dirs()
