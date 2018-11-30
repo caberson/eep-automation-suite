@@ -47,7 +47,7 @@ DIR_ASSETS = os.path.join(DIR_APP, 'assets')
 DIR_OUTPUT = os.path.join(DIR_APP, 'output')
 
 DONOR_REPORT_FOLDER_NAME = 'donor_reports'
-DONOR_REPORT_DIR = os.path.join(DIR_OUTPUT, DONOR_REPORT_FOLDER_NAME)
+DONOR_REPORT_DIR = os.path.join(DESTINATION_DIR, DONOR_REPORT_FOLDER_NAME)
 
 def build_english_year_code(year, month):
     season = 's' if month <= 6 else 'f'
