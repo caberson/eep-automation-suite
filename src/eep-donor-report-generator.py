@@ -469,13 +469,9 @@ def setup_argparse():
     return parser.parse_args()
 
 def main(args):
-    # init dir
-    eeputil.create_required_dirs()
-
     print 'beg: ', datetime.now()
     processWordDocs()
     print 'end: ', datetime.now()
-
 
 if __name__ == '__main__':
     #from datetime import datetime
@@ -514,6 +510,9 @@ if __name__ == '__main__':
 
     DIR_EEP_PHOTOS_CROPPED = eepshared.STUDENT_PHOTOS_CROPPED_DIR
     DIR_PHOTOS_CROPPED = DIR_EEP_PHOTOS_CROPPED
+
+    # init dir
+    eeputil.create_required_dirs()
 
     log_file = os.path.join(eepshared.DESTINATION_DIR, 'log.txt')
     try:
