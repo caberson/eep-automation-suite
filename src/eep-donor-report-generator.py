@@ -1,38 +1,27 @@
-﻿#-------------------------------------------------------------------------------
-# Name:        eep-donorReportGenerator
-# Purpose:
-#
-# Author:      cc
-#
-# Created:     07/07/2012
-# Copyright:   (c) cc 2012
-# Licence:     <your licence>
-#-------------------------------------------------------------------------------
+﻿"""
+EEP donor report generator.
+
+Requirements:
+* Can only be run from Windows
+* win32com.client
+* Word
+"""
 #!/usr/bin/env python
 
-import sys, os, inspect, math
+from glob import glob
+import inspect
+import math
+import os
+import sys
 from datetime import datetime
 from time import sleep
-
 try:
     import win32com.client as win32
 except:
     print 'win32com.client not found'
 
 #import timeit
-
 import xlrd
-
-#==============================================================================
-# adds current site-package folder path
-current_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
-local_site_packages_folder = current_folder + '/site-packages'
-if local_site_packages_folder not in sys.path and os.path.exists(local_site_packages_folder):
-    sys.path.insert(0, local_site_packages_folder)
-#==============================================================================
-
-
-# from eep import common
 import eepshared
 import eeputil
 
@@ -64,15 +53,11 @@ COL_SCHOOL_NAME_LENGTH = 13
 
 DEFAULT_ROWS_IN_DOC = 3 # table rows already on doc to accommodate students
 STUDENTS_PER_ROW = 3
-#    existingRowsOnDoc = 3   # table rows already on doc to accommodate students
-#    studentsPerRow = 3
 
 # TODO: Confirm if we can use template-donor-report-docx
 FILE_DONORREPORT_TEMPLATE_FILENAME = os.path.join(
     eepshared.TEMPLATES_DIR, 'template-donor-report.doc'
 )
-print "Template Dir: %s" % FILE_DONORREPORT_TEMPLATE_FILENAME
-
 
 def getWordHandle():
     word = win32.gencache.EnsureDispatch('Word.Application')
@@ -80,12 +65,10 @@ def getWordHandle():
     return word
 
 def getEepExcelSheet(intSheetIndex=0):	#0 based
-    # xls_file_na = '%s_eep_combined_sorted.xls' % (REPORT_YEAR_CODE_ENG)
-    xls_file_na = '%s_combined_sorted.xls' % (eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA)
-    #wb_eep = xlrd.open_workbook(os.getcwd() + '/assets/2011f_eep_combined.xls', on_demand=True, formatting_info=True)
-    wb_eep = xlrd.open_workbook(os.path.join(eepshared.DESTINATION_DIR, xls_file_na), on_demand=True, formatting_info=True)
+    xls_file_name = '%s_combined_sorted.xls' % (eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA)
+    xls_file_path = os.path.join(eepshared.DESTINATION_DIR, xls_file_name)
+    wb_eep = xlrd.open_workbook(xls_file_path, on_demand=True, formatting_info=True)
     sh_eep = wb_eep.sheet_by_index(intSheetIndex)
-    # print xls_file_na
     return sh_eep
 
 def getDonorList(sh):
@@ -300,8 +283,6 @@ def getNewDonorWordDoc(donor, student_count, word):
     tmpRange = activeDocument.Content
     tmpRange.Find.Execute(FindText="{donorID}", ReplaceWith=donorID)
 
-    #activeDocument.Sections(1).Headers(1).Range.Text = "HAHAHA"
-
     # get student table
     oStudentTbl = activeDocument.Tables(1)
 
@@ -330,10 +311,7 @@ def getNewDonorWordDoc(donor, student_count, word):
 
     return doc
 
-
 def updateDonorWordDoc(donor, studentList, word=None):
-    from glob import glob
-
     donorID, donorName = donor
 
     #from collections import deque
@@ -364,11 +342,8 @@ def updateDonorWordDoc(donor, studentList, word=None):
         )
         if not os.path.isfile(studentPhotoFN):
             LOG.write(''.join(['Photo not found: ', studentPhotoFN, "\n"]))
-            # print 'File not found - ', studentPhotoFN
             stuentPhotoFN = ''
         else:
-            # print croppedStudentPhotoForDonor
-            # print studentPhotoFN
             croppedStudentPhotoForDonor.remove(studentPhotoFN)
 
         # if only 1 slot is needed, center it
@@ -401,9 +376,8 @@ def updateDonorWordDoc(donor, studentList, word=None):
         # save
         targetFileName = os.path.join(eepshared.DONOR_REPORT_DIR, str(donorID) + '.doc') #os.path.join(os.getcwd(), '_donor-reports-processed', str(donorID) + '.doc')
         print targetFileName
-        # targetFileName = os.getcwd() + '/assets/test.doc'
         activeDocument = word.ActiveDocument
-        activeDocument.SaveAs(targetFileName)#, FileFormat=win32com.client.constants.wdFormatTextLineBreaks
+        activeDocument.SaveAs(targetFileName)
         doc.Close(False)
 
         if bQuitWordApplicationAtEnd:
@@ -432,7 +406,6 @@ def processWordDocs(processDonorID=0):
         if processDonorID > 0 and donorID != processDonorID:
             continue
 
-        #print donorID, donorName
         studentListForDonor = getDonorStudents(studentList, donorID)
         #print len(studentListForDonor), studentListForDonor
         updateDonorWordDoc(donor, studentListForDonor, word)
@@ -440,7 +413,6 @@ def processWordDocs(processDonorID=0):
     word.Application.Quit()
 
 def setup_argparse():
-    import argparse
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--noinitdir', nargs='*',
                    help='an integer for the accumulator')
@@ -466,7 +438,6 @@ def setup_argparse():
     )
 
     return parser
-    return parser.parse_args()
 
 def main(args):
     print 'beg: ', datetime.now()
@@ -474,7 +445,6 @@ def main(args):
     print 'end: ', datetime.now()
 
 if __name__ == '__main__':
-    #from datetime import datetime
     #word() #for testing
     # Usage: eep-donorReportGenerator.py -y2015 --month=5
     import argparse
@@ -524,6 +494,7 @@ if __name__ == '__main__':
         print 'error'
         pass
 
+    print "Template Dir: %s" % FILE_DONORREPORT_TEMPLATE_FILENAME
     main(args)
 
     LOG.close()
