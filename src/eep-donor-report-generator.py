@@ -81,7 +81,7 @@ def getWordHandle():
 
 def getEepExcelSheet(intSheetIndex=0):	#0 based
     # xls_file_na = '%s_eep_combined_sorted.xls' % (REPORT_YEAR_CODE_ENG)
-    xlf_file_na = '%s_combined_sorted.xls' % (eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA)
+    xls_file_na = '%s_combined_sorted.xls' % (eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA)
     #wb_eep = xlrd.open_workbook(os.getcwd() + '/assets/2011f_eep_combined.xls', on_demand=True, formatting_info=True)
     wb_eep = xlrd.open_workbook(os.path.join(eepshared.DESTINATION_DIR, xls_file_na), on_demand=True, formatting_info=True)
     sh_eep = wb_eep.sheet_by_index(intSheetIndex)
