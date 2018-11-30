@@ -42,9 +42,20 @@ DIR_DATA = os.path.join(DIR_APP, 'data')
 DIR_EEP_PHOTOS_ORIGINAL_DEFAULT = os.path.join(DIR_DATA, PHOTOS_ORIGINAL_FOLDER_NAME)
 DIR_EEP_PHOTOS_CROPPED_DEFAULT = os.path.join(DIR_DATA, PHOTOS_CROPPED_FOLDER_NAME)
 
-DIR_TEMPLATES = os.path.join(DIR_APP, 'templates')
+TEMPLATES_DIR = os.path.join(DIR_APP, '..', 'templates')
 DIR_ASSETS = os.path.join(DIR_APP, 'assets')
 DIR_OUTPUT = os.path.join(DIR_APP, 'output')
+
+DONOR_REPORT_FOLDER_NAME = 'donor_reports'
+DONOR_REPORT_DIR = os.path.join(DIR_OUTPUT, DONOR_REPORT_FOLDER_NAME)
+
+def build_english_year_code(year, month):
+    season = 's' if month <= 6 else 'f'
+    return '%s%s' % (str(year), season)
+
+def build_chinese_year_code(year, month):
+    season = u'春' if month <= 6 else u'秋'
+    return '%s%s' % (str(year), season)
 
 def get_config(config_file=None):
     import ConfigParser
