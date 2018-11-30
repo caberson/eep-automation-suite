@@ -54,6 +54,8 @@ def create_required_dirs():
 	create_dir_if_not_exists(eepshared.STUDENT_PHOTOS_ORIGINAL_DIR)
 	create_dir_if_not_exists(eepshared.STUDENT_PHOTOS_CROPPED_DIR)
 
+	create_dir_if_not_exists(eepshared.DONOR_REPORT_DIR)
+
 def remove_parenthesis_content(val, replaced=[], whitelist=[], blacklist=[]):
 	"""Remove parenthesis and inner strings from an unicode string."""
 	check_len = 4
