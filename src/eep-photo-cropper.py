@@ -29,14 +29,13 @@ if local_site_packages_folder not in sys.path and os.path.exists(
     sys.path.insert(0, local_site_packages_folder)
 #==============================================================================
 
-import dir
 import eeputil
 import eepshared
 
 #==============================================================================
 #DIRECTORY_PREFIX = 'eep'
-DIR_EEP_PHOTOS_ORIGINAL_DEFAULT = dir.DIR_EEP_PHOTOS_ORIGINAL_DEFAULT
-DIR_EEP_PHOTOS_CROPPED_DEFAULT = dir.DIR_EEP_PHOTOS_CROPPED_DEFAULT
+DIR_EEP_PHOTOS_ORIGINAL_DEFAULT = eepshared.DIR_EEP_PHOTOS_ORIGINAL_DEFAULT
+DIR_EEP_PHOTOS_CROPPED_DEFAULT = eepshared.DIR_EEP_PHOTOS_CROPPED_DEFAULT
 
 DIR_CURRENT_EXECUTABLE = os.path.dirname(sys.executable)
 IMAGE_MAGIC_EXE = os.path.join(DIR_CURRENT_EXECUTABLE, "..", "ImageMagick6.7.3", "convert.exe")
@@ -276,7 +275,7 @@ def main(argv):
     import getopt
     import photos.cropper
 
-    config = dir.get_config()
+    config = eepshared.get_config()
     # print config.items('path')
 
     OPTION_INIT_DIR = 1
