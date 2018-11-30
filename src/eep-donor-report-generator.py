@@ -470,7 +470,7 @@ def setup_argparse():
 
 def main(args):
     print 'beg: ', datetime.now()
-    # processWordDocs()
+    processWordDocs()
     print 'end: ', datetime.now()
 
 if __name__ == '__main__':
