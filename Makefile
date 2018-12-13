@@ -21,3 +21,7 @@ shell:
 		-e "EEP_DOC_DIR=/eep" \
 		-v ~/Documents/eep:/eep \
 		${IMAGE_LATEST}
+
+cropper:
+	pipenv run python src/eep-photo-cropper.py
+
