@@ -61,6 +61,7 @@ KEY_K = 107
 KEY_U = 117
 KEY_N = 110
 KEY_X = 120
+KEY_ESCAPE = 27
 
 
 MAC_KEY_DOWN = 63233
@@ -137,9 +138,25 @@ def rename_file(face_cropper, old_file_name, new_file_name, dir_photos_original,
 
     return (donor_id, new_file_name)
 
+def add_help_text():
+    status_list = [
+        '123.45: space/enter to rename',
+        'j: crop window left',
+        'k: crop window right',
+        's: save crop',
+        'esc: exit app',
+    ]
+
+    status = '       '.join(status_list)
+    cv2.displayStatusBar(CROPPER_WINDOW_NAME, status)
+
 def start_main_loop(face_cropper):
     # setup a window for displaying stuff
-    window = cv2.namedWindow(CROPPER_WINDOW_NAME)#, cv2.CV_WINDOW_AUTOSIZE
+    cv2.namedWindow(CROPPER_WINDOW_NAME)
+    # cv2.displayOverlay(CROPPER_WINDOW_NAME, 'hohoho')
+    cv2.moveWindow(CROPPER_WINDOW_NAME, 100, 100)
+    # cv2.displayStatusBar(CROPPER_WINDOW_NAME, 'test')
+    add_help_text()
     crop_rect_position_increment = 2
     show_photo(face_cropper.get_current_photo())
 
@@ -219,8 +236,10 @@ repr(chr(res%256)) if res%256 < 128 else '?')
             face_cropper.delete_current_image()
             show_photo(face_cropper.get_current_photo())
             pass
-        elif key_pressed == 27:
-            #cv2.destroyWindow(CROPPER_WINDOW_NAME)
+
+        elif key_pressed == KEY_ESCAPE:
+            # Exit program
+            cv2.destroyAllWindows()
             break
 
 # debugging method for Windows only
