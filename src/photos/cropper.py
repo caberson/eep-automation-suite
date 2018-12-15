@@ -37,11 +37,14 @@ class FaceCropper:
     #MAX_THUMB_HEIGHT = 768.0
 
     #opencv related variables
-    opencvHaarCascadePath = os.path.join(
-        # DIR_CURRENT_EXECUTABLE, "..", "lib", "opencv", "data", "haarcascades"
-        # '..', 'lib',  "opencv", "data", "haarcascades"
-        cv2.__path__[0], "data"
-    ) # 'D:\_cc\portables\PortablePython2.7/opencv/data/haarcascades/'
+    try:
+        opencvHaarCascadePath = os.path.join(
+            # DIR_CURRENT_EXECUTABLE, "..", "lib", "opencv", "data", "haarcascades"
+            # '..', 'lib',  "opencv", "data", "haarcascades"
+            cv2.__path__[0], "data"
+        )
+    except:
+        opencvHaarCascadePath = 'c:\portable_apps\portable_python\opencv\data\haarcascades\'
     print opencvHaarCascadePath
     cascade_fn = os.path.join(opencvHaarCascadePath, "haarcascade_frontalface_alt.xml")
     # cascade_fn = os.path.join("haarcascade_frontalface_alt.xml")
