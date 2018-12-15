@@ -1,3 +1,5 @@
+Windows
+=======
 @REM c:\portable_apps\PortablePython2.7\App\..\ImageMagick6.7.3\convert.exe C:\myscripts\eep\data\eep_photos_cropped\004-01.jpg -resize 354x425 -density 180 C:\myscripts\eep\data\eep_photos_cropped\004-01.jpg
 
 @REM C:\ImageFolder\thumbs\convert "C:\ImageFolder\*.tga" -format png -thumbnail 64x64 -set filename:orig %f %[filename:orig].png
@@ -7,3 +9,11 @@ c:\portable_apps\portable_python\ImageMagick-6.7.3\convert.exe "C:\projects\eep\
 Single file processing
 c:\portable_apps\portable_python\ImageMagick-6.7.3\convert.exe "C:\tmp\*.jpg" -resize 354x425 -density 180 -set filename:orig %f C:\tmp\%[filename:orig]
 
+
+OS X/Linux
+==========
+Single file:
+convert ~/Documents/photos-exported/eep/*.jpg -resize 354x425 -density 180 -set filename:orig %f ~/Documents/photos-exported/eep-processed/%[filename:orig]
+
+Batch:
+mogrify -resize 354x425 -density 180 -path ~/Documents/photos-exported/eep-processed ~/Documents/photos-exported/eep/*.jpg
