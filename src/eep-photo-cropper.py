@@ -148,7 +148,10 @@ def add_help_text():
     ]
 
     status = '       '.join(status_list)
-    cv2.displayStatusBar(CROPPER_WINDOW_NAME, status)
+    try:
+        cv2.displayStatusBar(CROPPER_WINDOW_NAME, status)
+    except:
+        pass
 
 def start_main_loop(face_cropper):
     # setup a window for displaying stuff
