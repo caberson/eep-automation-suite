@@ -154,7 +154,10 @@ def start_main_loop(face_cropper):
     # setup a window for displaying stuff
     cv2.namedWindow(CROPPER_WINDOW_NAME)
     # cv2.displayOverlay(CROPPER_WINDOW_NAME, 'hohoho')
-    cv2.moveWindow(CROPPER_WINDOW_NAME, 100, 100)
+    try:
+        cv2.moveWindow(CROPPER_WINDOW_NAME, 100, 100)
+    except:
+        pass
     # cv2.displayStatusBar(CROPPER_WINDOW_NAME, 'test')
     add_help_text()
     crop_rect_position_increment = 2
