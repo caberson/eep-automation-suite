@@ -353,6 +353,7 @@ class EepLists:
             ' create_checklist, receivinglist, lettersubmitlist',
             school,
         ]).encode(eepshared.OUTPUT_ENCODING)
+
         self.create_lettersubmitlist(beg_row, end_row)
         self.create_checklist(beg_row, end_row)
         self.create_receivinglist(beg_row, end_row)
@@ -390,7 +391,6 @@ class EepLists:
         #sh_new.set_show_headers ( 0 )
         #sh_new.set_print_headers( 0 )
 
-        #sh_new.default_row_height = 200
         sh_new.set_header_margin(0)
         sh_new.set_footer_margin(0)
         sh_new.set_header_str("")
@@ -400,6 +400,20 @@ class EepLists:
         sh_new.set_right_margin(0.25)
 
         return wb_new
+
+    def calculate_comment_col_height(self, value, min_height=None):
+        """Calculate row height based on comment length."""
+        if min_height is None:
+            min_height = self.DEFAULT_ROW_HEIGHT
+
+        rows = math.trunc(math.ceil(len(value) / 30.0))
+        height = rows * 300
+
+        # If calculated row height is less than min height, min height will be used.
+        if height < min_height:
+            return min_height
+
+        return height
 
     def create_lettersubmitlist(self, row_lo, row_hi):
         TGT_HEADING_ROWS = 2
@@ -446,7 +460,6 @@ class EepLists:
             0, 0, 7, 8, yr_title, self.STYLES['CELL_LISTING_TITLE']
         )
 
-
         # Total rows processed so far
         i = 0
         for rx in range(row_lo, row_hi + 1):
@@ -455,7 +468,9 @@ class EepLists:
             current_xlrd_excel_row_num = rx
             current_xlwt_excel_row_num = i + TGT_HEADING_ROWS
 
-            sh_new.row(current_xlwt_excel_row_num).height = self.DEFAULT_ROW_HEIGHT
+            student_comment = sheet.cell_value(current_xlrd_excel_row_num, sheet.colpos['comment'])
+            row_height = self.calculate_comment_col_height(student_comment)
+            sh_new.row(current_xlwt_excel_row_num).height = row_height
             sh_new.row(current_xlwt_excel_row_num).height_mismatch = 1
 
             # Row id
@@ -592,7 +607,9 @@ class EepLists:
             current_xlrd_excel_row_num = rx
             current_xlwt_excel_row_num = i + TGT_HEADING_ROWS
 
-            sh_new.row(current_xlwt_excel_row_num).height = self.DEFAULT_ROW_HEIGHT
+            student_comment = sheet.cell_value(current_xlrd_excel_row_num, sheet.colpos['comment'])
+            row_height = self.calculate_comment_col_height(student_comment)
+            sh_new.row(current_xlwt_excel_row_num).height = row_height
             sh_new.row(current_xlwt_excel_row_num).height_mismatch = 1
 
             # Row id
