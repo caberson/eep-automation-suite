@@ -51,6 +51,11 @@ DIR_OUTPUT = os.path.join(DIR_APP, 'output')
 DONOR_REPORT_FOLDER_NAME = 'donor_reports'
 DONOR_REPORT_DIR = os.path.join(DESTINATION_DIR, DONOR_REPORT_FOLDER_NAME)
 
+def get_donor_report_dir(yr_code=None):
+    if yr_code is None:
+        yr_code = build_english_year_code()
+    return os.path.join(EEP_DOC_DIR, yr_code, DONOR_REPORT_FOLDER_NAME)
+
 def get_exl_file_base_name(yr=None, mo=None):
     yr_code = build_english_year_code(yr, mo)
     return '{}_eep'.format(yr_code)

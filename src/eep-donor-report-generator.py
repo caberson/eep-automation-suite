@@ -311,6 +311,7 @@ def getNewDonorWordDoc(donor, student_count, word):
 
 def updateDonorWordDoc(donor, studentList, word=None):
     donorID, donorName = donor
+    donor_report_dir = eepshared.get_donor_report_dir(REPORT_YEAR_CODE_ENG)
 
     #from collections import deque
     bQuitWordApplicationAtEnd = False
@@ -372,7 +373,7 @@ def updateDonorWordDoc(donor, studentList, word=None):
 
     if OPTION_CREATE_WORD_DOC:
         # save
-        targetFileName = os.path.join(eepshared.DONOR_REPORT_DIR, str(donorID) + '.doc') #os.path.join(os.getcwd(), '_donor-reports-processed', str(donorID) + '.doc')
+        targetFileName = os.path.join(donor_report_dir, str(donorID) + '.doc') #os.path.join(os.getcwd(), '_donor-reports-processed', str(donorID) + '.doc')
         print targetFileName
         activeDocument = word.ActiveDocument
         activeDocument.SaveAs(targetFileName)
