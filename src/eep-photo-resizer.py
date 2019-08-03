@@ -72,13 +72,15 @@ if __name__ == '__main__':
     default_base_dir = 'C:\Users\cc\Documents\eep\\{}'.format(yr_code)
     src_photos_path = os.path.join(
         # 'C:\projects\eep-automation-suite\data\_to_resize',
-        default_base_dir,
+        # default_base_dir,
+        '\\\\VBOXSVR\cc\Documents\eep',
+        yr_code,
         'eep_photos_cropped'
     )
     output_path = os.path.join(
         # 'C:\projects\eep-automation-suite\data\\2017f\eep_photos_cropped',
         default_base_dir,
-        'eep_photos_resized'
+        'eep_photos_cropped'
     )
     # DEFAULT_OUTPUT_PATH = os.path.join(
     #     'c:\projects\eep-automation-suite\data\2018s\eep_photos_cropped',
