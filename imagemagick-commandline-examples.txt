@@ -10,6 +10,8 @@ Single file processing
 c:\portable_apps\portable_python\ImageMagick-6.7.3\convert.exe "C:\tmp\*.jpg" -resize 354x425 -density 180 -set filename:orig %f C:\tmp\%[filename:orig]
 
 
+https://imagemagick.org/script/mogrify.php
+
 OS X/Linux
 ==========
 Single file:
@@ -17,3 +19,12 @@ convert ~/Documents/photos-exported/eep/*.jpg -resize 354x425 -density 180 -set 
 
 Batch:
 mogrify -resize 354x425 -density 180 -path ~/Documents/photos-exported/eep-processed ~/Documents/photos-exported/eep/*.jpg
+mogrify -resize 354x425 -density 180 -path ~/Documents/eep/2018f/test2 ~/Documents/eep/2018f/test/*.jpg
+
+
+Batch convert (not work)
+# Convert all PNG files to jpg format (works)
+magick mogrify -format jpg *.PNG
+
+Rename
+rename 's/\.JPG$/.jpg/' *.JPG
