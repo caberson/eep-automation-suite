@@ -18,11 +18,12 @@ Steps
 
 * Create year{seasonLetter}_eep_combined.xls.
 	python eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/{year}{season}/{year}{season}_eep.xls --sheetnums {sheet_1_index} ... #0 based.
+	./eep-merge-sheets-from-raw-excel.py /eep/2019s/2019s_eep.xls --sheetnums 13 14
 
 	cd ~/Documents/eep/2012f
 	/Users/cc/Projects/eep/eep-merge-sheets-from-raw-excel.py ~/Documents/eep/2017s/2017s_eep.xls --sheetnums 31 32
 
-    /Users/cc/Documents/eep/scripts/python_scripts/eep/eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/2012f/2012f_eep.xls --sheetnums 29 30
+	/Users/cc/Documents/eep/scripts/python_scripts/eep/eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/2012f/2012f_eep.xls --sheetnums 29 30
 
 * Open up x_eep_combined.xls, clean up(font problem if exists) and save using Excel program.
 	This forces calculation of formulas that can be used in the next step.
@@ -35,12 +36,15 @@ Steps
 
 	Clean up student-label-name column as needed.
 
-* Open up x_eep_combined.xls in Excel and resave the file.
+* Open up x_eep_combined_sorted.xls in Excel, clean up for final output and resave the file.
 	The file created automatically can't be used with mail merge for unknown reasons.
+  NOTE: Check student_name_extra column, put the value back into name column if it was
+	to distinguish a student from another.
 
 * Create all the lists using:
 	-- If no Excel file is specified, application will attempt to look for current season's file.
 	python ./eep-generate-lists.py  ~/Documents/eep/2013s/2013s_eep_combined_sorted.xls
+	./eep-generate-lists.py /eep/2019s/2919s_eep_combined_sorted.xls
 
 
 
@@ -52,10 +56,11 @@ NOTE: Use BiauKaiTee if possible.
 	 - Inspect new document
 	 - Save as PDF to _toPrint/student-labels as student-labels-0Xschar.pdf
 	 - Notes:
-	 - If update label is grayed out, make sure mail merge type is "label".  
+	 - If update label is grayed out, make sure mail merge type is "label".  This can be done by
+	   selecting "start mail merge" and then "label".
 
 	regular name length, use 48pt
-	if long names, use 26pt 
+	if long names, use 26pt
 	- Letters / Pt Size (新細明體):
 	- 4 / 60pt
 	- 5 / 49pt
@@ -64,8 +69,8 @@ NOTE: Use BiauKaiTee if possible.
 	- 8 / 30
 	- 9 / 27
 	- 10+ / 24
-		- 12 / 20
-		- 13 / 18
+	- 12 / 20
+	- 13 / 18 (none after 2019)
 
 May have to print to PDF for all files so format remains the same when printed at EEP office.
 

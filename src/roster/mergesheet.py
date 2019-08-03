@@ -60,7 +60,7 @@ colpos = {
     'student_donor_name': 10,
     'student_donor_donation_amount_local': 11,
     'student_donor_donation_amount_us': 12,
-    'comment': 13,
+    'comment': 14, # Was 13 before 2019.
     'comment_tw': 14,
 }
 
@@ -169,7 +169,7 @@ def combine_sheets(raw_excel_file, sheets, out_file_name=None):
         try:
             columns = SHEET_COLUMNS[str(sheet_count)]
         except:
-            columns = SHEET_COLUMNS['DEFAULT'];
+            columns = SHEET_COLUMNS['DEFAULT']
 
         main_columns_count = len(columns)
 
@@ -226,10 +226,10 @@ def combine_sheets(raw_excel_file, sheets, out_file_name=None):
             )
 
             # student name
-            student_name = sheet.get_student_name(rx)
+            original_student_name = sheet.get_student_name(rx)
             replaced = []
             student_name = eeputil.remove_parenthesis_content(
-                student_name, replaced, STUDENT_NAME_WHITELIST, STUDENT_NAME_BLACKLIST
+                original_student_name, replaced, STUDENT_NAME_WHITELIST, STUDENT_NAME_BLACKLIST
             )
             student_name_extra = u' '.join(replaced)
             # write the student label name
