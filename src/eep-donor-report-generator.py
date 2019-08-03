@@ -66,7 +66,7 @@ def getWordHandle():
 
 def getEepExcelSheet(intSheetIndex=0):	#0 based
     xls_file_name = '%s_combined_sorted.xls' % (eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA)
-    xls_file_path = os.path.join(eepshared.DESTINATION_DIR, xls_file_name)
+    xls_file_path = os.path.join(DESTINATION_DIR, xls_file_name)
     wb_eep = xlrd.open_workbook(xls_file_path, on_demand=True, formatting_info=True)
     sh_eep = wb_eep.sheet_by_index(intSheetIndex)
     return sh_eep
@@ -482,11 +482,12 @@ if __name__ == '__main__':
     REPORT_SEASON = u'秋' if REPORT_MONTH > 8 else u'春'
     REPORT_YEAR_CODE_ENG = eepshared.build_english_year_code(REPORT_YEAR, REPORT_MONTH)
     PHOTOS_CROPPED_DIR = eepshared.STUDENT_PHOTOS_CROPPED_DIR
+    DESTINATION_DIR = os.path.join(eepshared.EEP_DOC_DIR, REPORT_YEAR_CODE_ENG)
 
     # init dir
     eeputil.create_required_dirs(REPORT_YEAR, REPORT_MONTH)
 
-    log_file = os.path.join(eepshared.DESTINATION_DIR, 'log.txt')
+    log_file = os.path.join(DESTINATION_DIR, 'log.txt')
     try:
         LOG = open(log_file, 'w')
     except:
