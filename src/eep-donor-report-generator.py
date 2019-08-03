@@ -480,7 +480,7 @@ if __name__ == '__main__':
     PHOTOS_CROPPED_DIR = eepshared.STUDENT_PHOTOS_CROPPED_DIR
 
     # init dir
-    eeputil.create_required_dirs()
+    eeputil.create_required_dirs(REPORT_YEAR, REPORT_MONTH)
 
     log_file = os.path.join(eepshared.DESTINATION_DIR, 'log.txt')
     try:
