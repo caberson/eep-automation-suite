@@ -441,7 +441,11 @@ def setup_argparse():
 
 def main(args):
     print 'beg: ', datetime.now()
-    processWordDocs()
+    try:
+        processWordDocs()
+    except Exception as err:
+        print(err)
+
     print 'end: ', datetime.now()
 
 if __name__ == '__main__':
