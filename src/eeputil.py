@@ -33,28 +33,54 @@ def create_dir_if_not_exists(dir):
         os.makedirs(dir)
 
 # Create required dirs
-def create_required_dirs():
-    print eepshared.EEP_DOC_DIR
-    print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR
-    print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'checkinglist'
-    print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'receivinglist'
-    print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'lettersubmitlist'
-    print eepshared.STUDENT_NAME_LABELS_DIR
-    print eepshared.STUDENT_PHOTOS_ORIGINAL_DIR
-    print eepshared.STUDENT_PHOTOS_CROPPED_DIR
+def create_required_dirs(yr=None, mo=None):
+    join = os.path.join
+    # print eepshared.EEP_DOC_DIR
+    # print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR
+    # print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'checkinglist'
+    # print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'receivinglist'
+    # print eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'lettersubmitlist'
+    # print eepshared.STUDENT_NAME_LABELS_DIR
+    # print eepshared.STUDENT_PHOTOS_ORIGINAL_DIR
+    # print eepshared.STUDENT_PHOTOS_CROPPED_DIR
 
-    create_dir_if_not_exists(eepshared.EEP_DOC_DIR)
-    create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR)
-    create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'checkinglist')
-    create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'receivinglist')
-    create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'lettersubmitlist')
+    if yr is None:
+        yr = datetime.now().year
+    if mo is None:
+        mo = datetime.now().month
+    
+    season_dir = eepshared.build_english_year_code(yr, mo)
+    base_dir = join(eepshared.EEP_DOC_DIR, season_dir)
+    ins_doc_dst_dir = join(base_dir, eepshared.INSPECTION_DOC_DIR_NAME)
+    required_dirs = [
+        eepshared.EEP_DOC_DIR,
+        base_dir,
+        ins_doc_dst_dir,
+        join(ins_doc_dst_dir, 'checkinglist'),
+        join(ins_doc_dst_dir, 'receivinglist'),
+        join(ins_doc_dst_dir, 'lettersubmitlist'),
+        join(base_dir, eepshared.STUDENT_NAME_LABELS_DIR_NAME),
+        join(base_dir, eepshared.PHOTOS_ORIGINAL_FOLDER_NAME),
+        join(base_dir, eepshared.PHOTOS_CROPPED_FOLDER_NAME),
+        join(base_dir, eepshared.DONOR_REPORT_FOLDER_NAME),
+    ]
+    for d in required_dirs:
+        print(d)
+        create_dir_if_not_exists(d)
+    
 
-    create_dir_if_not_exists(eepshared.STUDENT_NAME_LABELS_DIR)
+    # create_dir_if_not_exists(eepshared.EEP_DOC_DIR)
+    # create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR)
+    # create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'checkinglist')
+    # create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'receivinglist')
+    # create_dir_if_not_exists(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR + 'lettersubmitlist')
 
-    create_dir_if_not_exists(eepshared.STUDENT_PHOTOS_ORIGINAL_DIR)
-    create_dir_if_not_exists(eepshared.STUDENT_PHOTOS_CROPPED_DIR)
+    # create_dir_if_not_exists(eepshared.STUDENT_NAME_LABELS_DIR)
 
-    create_dir_if_not_exists(eepshared.DONOR_REPORT_DIR)
+    # create_dir_if_not_exists(eepshared.STUDENT_PHOTOS_ORIGINAL_DIR)
+    # create_dir_if_not_exists(eepshared.STUDENT_PHOTOS_CROPPED_DIR)
+
+    # create_dir_if_not_exists(eepshared.DONOR_REPORT_DIR)
 
 def remove_parenthesis_content(val, replaced=[], whitelist=[], blacklist=[]):
     """Remove parenthesis and inner strings from an unicode string."""

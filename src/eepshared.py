@@ -27,15 +27,17 @@ DESTINATION_DIR = (
     SUGGESTED_FILE_DESTINATION_FOLDER_NAME + '/'
 )
 
-INSPECTION_DOCUMENTS_DESTINATION_DIR = DESTINATION_DIR + 'documents_inspection/'
+INSPECTION_DOC_DIR_NAME = 'documents_inspect'
+STUDENT_NAME_LABELS_DIR_NAME = 'student_name_labels'
 
-STUDENT_NAME_LABELS_DIR = DESTINATION_DIR + 'student_name_labels/'
+INSPECTION_DOCUMENTS_DESTINATION_DIR = os.path.join(DESTINATION_DIR, INSPECTION_DOC_DIR_NAME)
+STUDENT_NAME_LABELS_DIR = os.path.join(DESTINATION_DIR, STUDENT_NAME_LABELS_DIR_NAME)
 
 PHOTOS_ORIGINAL_FOLDER_NAME = 'eep_photos_original'
 PHOTOS_CROPPED_FOLDER_NAME = 'eep_photos_cropped'
 
-STUDENT_PHOTOS_ORIGINAL_DIR = DESTINATION_DIR + PHOTOS_ORIGINAL_FOLDER_NAME
-STUDENT_PHOTOS_CROPPED_DIR = DESTINATION_DIR + PHOTOS_CROPPED_FOLDER_NAME
+STUDENT_PHOTOS_ORIGINAL_DIR = os.path.join(DESTINATION_DIR, PHOTOS_ORIGINAL_FOLDER_NAME)
+STUDENT_PHOTOS_CROPPED_DIR = os.path.join(DESTINATION_DIR, PHOTOS_CROPPED_FOLDER_NAME)
 
 DIR_APP = os.getcwd()
 DIR_DATA = os.path.join(DIR_APP, 'data')
@@ -49,11 +51,21 @@ DIR_OUTPUT = os.path.join(DIR_APP, 'output')
 DONOR_REPORT_FOLDER_NAME = 'donor_reports'
 DONOR_REPORT_DIR = os.path.join(DESTINATION_DIR, DONOR_REPORT_FOLDER_NAME)
 
-def build_english_year_code(year, month):
+def build_english_year_code(year=None, month=None):
+    if year is None:
+        year = datetime.now().year
+    if month is None:
+        month = datetime.now().month
+    
     season = 's' if month <= 6 else 'f'
     return '%s%s' % (str(year), season)
 
-def build_chinese_year_code(year, month):
+def build_chinese_year_code(year=None, month=None):
+    if year is None:
+        year = datetime.now().year
+    if month is None:
+        month = datetime.now().month
+
     season = u'春' if month <= 6 else u'秋'
     return '%s%s' % (str(year), season)
 
