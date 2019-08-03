@@ -483,7 +483,7 @@ if __name__ == '__main__':
         REPORT_MONTH = args.month
     REPORT_SEASON = u'秋' if REPORT_MONTH > 8 else u'春'
     REPORT_YEAR_CODE_ENG = eepshared.build_english_year_code(REPORT_YEAR, REPORT_MONTH)
-    PHOTOS_CROPPED_DIR = eepshared.STUDENT_PHOTOS_CROPPED_DIR
+    PHOTOS_CROPPED_DIR = eepshared.get_student_photos_cropped_dir(REPORT_YEAR_CODE_ENG)
     DESTINATION_DIR = os.path.join(eepshared.EEP_DOC_DIR, REPORT_YEAR_CODE_ENG)
 
     # init dir

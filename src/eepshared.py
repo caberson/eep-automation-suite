@@ -51,6 +51,12 @@ DIR_OUTPUT = os.path.join(DIR_APP, 'output')
 DONOR_REPORT_FOLDER_NAME = 'donor_reports'
 DONOR_REPORT_DIR = os.path.join(DESTINATION_DIR, DONOR_REPORT_FOLDER_NAME)
 
+def get_student_photos_cropped_dir(yr_code=None):
+    if yr_code is None:
+        yr_code = build_english_year_code()
+    return os.path.join(EEP_DOC_DIR, yr_code, PHOTOS_CROPPED_FOLDER_NAME)
+
+
 def get_donor_report_dir(yr_code=None):
     if yr_code is None:
         yr_code = build_english_year_code()
