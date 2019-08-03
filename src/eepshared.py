@@ -51,6 +51,10 @@ DIR_OUTPUT = os.path.join(DIR_APP, 'output')
 DONOR_REPORT_FOLDER_NAME = 'donor_reports'
 DONOR_REPORT_DIR = os.path.join(DESTINATION_DIR, DONOR_REPORT_FOLDER_NAME)
 
+def get_exl_file_base_name(yr=None, mo=None):
+    yr_code = build_english_year_code(yr, mo)
+    return '{}_eep'.format(yr_code)
+
 def build_english_year_code(year=None, month=None):
     if year is None:
         year = datetime.now().year

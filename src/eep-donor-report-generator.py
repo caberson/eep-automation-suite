@@ -64,9 +64,7 @@ def getWordHandle():
     word.Visible = True
     return word
 
-def getEepExcelSheet(intSheetIndex=0):	#0 based
-    xls_file_name = '%s_combined_sorted.xls' % (eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA)
-    xls_file_path = os.path.join(DESTINATION_DIR, xls_file_name)
+def getEepExcelSheet(xls_file_path, intSheetIndex=0):	#0 based
     wb_eep = xlrd.open_workbook(xls_file_path, on_demand=True, formatting_info=True)
     sh_eep = wb_eep.sheet_by_index(intSheetIndex)
     return sh_eep
@@ -385,7 +383,10 @@ def updateDonorWordDoc(donor, studentList, word=None):
 
 
 def getRequiredLists():
-    sh_eep = getEepExcelSheet(0)    #sheet_num is 0 based
+    xls_file_name = '{}_combined_sorted.xls'.format(eepshared.get_exl_file_base_name(REPORT_YEAR, REPORT_MONTH))
+    xls_file_path = os.path.join(DESTINATION_DIR, xls_file_name)
+
+    sh_eep = getEepExcelSheet(xls_file_path, 0) #sheet_num is 0 based
     donorList = getDonorList(sh_eep)
     studentList = getStudentList(sh_eep)
 
