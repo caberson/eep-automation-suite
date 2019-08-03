@@ -29,16 +29,12 @@ import eepshared
 # Windows configs
 DIR_CURRENT_EXECUTABLE = os.path.dirname(sys.executable)
 IMAGE_MAGIC_EXE = os.path.join(DIR_CURRENT_EXECUTABLE, "..", "ImageMagick-6.7.3", "convert.exe")
-DEFAULT_OUTPUT_PATH = os.path.join(
-    'c:\projects\eep-automation-suite\data\2018s\eep_photos_cropped',
-    ''
-)
 RESIZE_RESOLUTION = '354x425'
 
 # OSX configs
 if os.name != 'nt':
     IMAGE_MAGIC_EXE = 'convert'
-    RESIZE_RESOLUTION = '136x170'
+    # RESIZE_RESOLUTION = '136x170'
 
 def resize_photos_for_donor_doc(photos_path, out_path):
     if not photos_path:
@@ -72,14 +68,22 @@ if __name__ == '__main__':
     # python eep-photo-resizer.py -p C:\projects\eep\data\2017f\eep_photos_cropped_original -o C:\projects\eep\data\2017f\eep_photos_cropped
     # python src/eep-photo-resizer.py -p ~/Documents/eep/2019s/eep_photos_cropped -o ~/Documents/eep/2019s/eep_photos_resized
     # TODO: Need to remove the hard defined path below.
+    yr_code = eepshared.build_english_year_code()
+    default_base_dir = 'C:\Users\cc\Documents\eep\\{}'.format(yr_code)
     src_photos_path = os.path.join(
-        'C:\projects\eep-automation-suite\data\_to_resize',
-        ''
+        # 'C:\projects\eep-automation-suite\data\_to_resize',
+        default_base_dir,
+        'eep_photos_cropped'
     )
     output_path = os.path.join(
-        'C:\projects\eep-automation-suite\data\\2017f\eep_photos_cropped',
-        ''
+        # 'C:\projects\eep-automation-suite\data\\2017f\eep_photos_cropped',
+        default_base_dir,
+        'eep_photos_resized'
     )
+    # DEFAULT_OUTPUT_PATH = os.path.join(
+    #     'c:\projects\eep-automation-suite\data\2018s\eep_photos_cropped',
+    #     ''
+    # )
 
     parser = argparse.ArgumentParser(description='Resize EEP donor photos.')
     parser.add_argument('-p', nargs='?', default=src_photos_path)
