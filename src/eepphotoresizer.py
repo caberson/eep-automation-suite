@@ -34,7 +34,15 @@ RESIZE_RESOLUTION = '354x425'
 # OSX configs
 if os.name != 'nt':
     IMAGE_MAGIC_EXE = 'convert'
-    # RESIZE_RESOLUTION = '136x170'
+
+def resize_img(src_file, target_file=None):
+    if target_file is None:
+        target_file = src_file
+    
+    # -units is required for os x convert to work correctly
+    run_cmd = IMAGE_MAGIC_EXE + ' ' + src_file + ' -units PixelsPerInch -resize ' + RESIZE_RESOLUTION + ' -density 180 ' + target_file
+    print run_cmd
+    os.system(run_cmd)
 
 def resize_photos_for_donor_doc(photos_path, out_path):
     if not photos_path:
@@ -49,16 +57,11 @@ def resize_photos_for_donor_doc(photos_path, out_path):
     files = glob.glob(pattern)
 
     for f in files:
-        # print f
         file_base_name = os.path.basename(f)
         file_name, file_extension = os.path.splitext(file_base_name)
 
         target_f = os.path.join(out_path, file_base_name)
-        #print target_f
-        # -units is required for os x convert to work correctly
-        run_cmd = IMAGE_MAGIC_EXE + ' ' + f + ' -units PixelsPerInch -resize ' + RESIZE_RESOLUTION + ' -density 180 ' + target_f
-        print run_cmd
-        os.system(run_cmd)
+        resize_img(f, target_f)
 
 def main():
     pass
