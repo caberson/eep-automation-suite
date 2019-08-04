@@ -29,6 +29,7 @@ Available Scripts
     * eep-generate-lists.py
     * eep-merge-sheets-from-raw-excel.py
     * eep-photo-cropper.py
+    * eepphotoresizer.py
 
 Either do pipenv shell first and invoke the individual scripts.
 Or use `pipenv run`. e.g. pipenv run python src/eep-photo-cropper.py

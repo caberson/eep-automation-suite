@@ -15,7 +15,8 @@ https://imagemagick.org/script/mogrify.php
 OS X/Linux
 ==========
 Single file:
-convert ~/Documents/photos-exported/eep/*.jpg -resize 354x425 -density 180 -set filename:orig %f ~/Documents/photos-exported/eep-processed/%[filename:orig]
+convert ~/Documents/photos-exported/eep/*.jpg -units PixelsPerInch -resize 354x425 -density 180 -set filename:orig %f ~/Documents/photos-exported/eep-processed/%[filename:orig]
+convert ~/Documents/eep/2019s/eep_photos_cropped/0002-02.jpg -units PixelsPerInch -resize 354x425 -density 180 -set filename:orig %f ~/Documents/eep/2019s/%[filename:orig]
 
 Batch:
 mogrify -resize 354x425 -density 180 -path ~/Documents/photos-exported/eep-processed ~/Documents/photos-exported/eep/*.jpg
