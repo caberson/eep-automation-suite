@@ -55,9 +55,8 @@ def resize_photos_for_donor_doc(photos_path, out_path):
 
         target_f = os.path.join(out_path, file_base_name)
         #print target_f
-        # run_cmd = IMAGE_MAGIC_EXE + ' ' + f + ' -resize 354x425 -density 180 ' + target_f
-        # run_cmd = IMAGE_MAGIC_EXE + ' ' + f + ' -resize 136x170 -density 180 ' + target_f
-        run_cmd = IMAGE_MAGIC_EXE + ' ' + f + ' -resize ' + RESIZE_RESOLUTION + ' -density 180 ' + target_f
+        # -units is required for os x convert to work correctly
+        run_cmd = IMAGE_MAGIC_EXE + ' ' + f + ' -units PixelsPerInch -resize ' + RESIZE_RESOLUTION + ' -density 180 ' + target_f
         print run_cmd
         os.system(run_cmd)
 
