@@ -85,3 +85,17 @@ in et/cdata.
 
 - tools/volunteer-labels.docx
 - tools/volunteer-sticky-labels.docx
+
+EEP Donor Report Generator
+==========================
+* Organiza student photos into the season directory
+* Brighten photos if necessary
+* Rename all extensions to lower case
+  rename 's/\.JPG$/.jpg/' *.JPG
+* Manually rename files with Chinese names
+* Use eep-photo-cropper.py to rename photos
+* Do a second pass with eep-photo-cropper.py to crop photos
+* In Windows VM, use eep-photo-resizer.py to resize photos from host directory to VM directory
+* In Windows VM, use eep-donor-report-generator.py to generate Word files
+* Move the Word files out to host machine
+* Check Word files for errors
