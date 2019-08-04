@@ -10,7 +10,6 @@ class FaceCropper:
     # print inspect.stack()[0][1]
     DIR_CURRENT_EXECUTABLE = os.path.dirname(sys.executable)
     DIR_CURRENT_EXECUTABLE = os.path.dirname(inspect.stack()[0][1])
-    #IMAGE_MAGIC_EXE = '' #os.path.join(DIR_CURRENT_EXECUTABLE, "..", "ImageMagick6.7.3", "convert.exe")
 
     dir_photos_original = ''
     dir_photos_cropped = ''
@@ -24,8 +23,7 @@ class FaceCropper:
     current_thumbnail = None
     current_rect = None
 
-    image_magic_exe = ''  # IMAGE_MAGIC_EXE #'D:\_cc\portables\PortablePython2.7\ImageMagick6.7.3\convert.exe '
-    # print image_magic_exe
+    image_magic_exe = None
 
     MAX_THUMB_WIDTH = 1024.0
     MAX_THUMB_HEIGHT = 768.0
@@ -48,13 +46,15 @@ class FaceCropper:
     print cascade_fn
     cascade = cv2.CascadeClassifier(cascade_fn)
 
-    def __init__(self, dir_photos_original, dir_photos_cropped, dir_image_magic_exe=''):
+    def __init__(self, dir_photos_original, dir_photos_cropped, image_magic_exe=None):
         self.dir_photos_original = dir_photos_original
         self.dir_photos_cropped = dir_photos_cropped
-        self.image_magic_exe = dir_image_magic_exe
-
-        if self.image_magic_exe == '' and not os.path.exists(self.image_magic_exe):
-            print 'Warning: ImageMagicExe path not set.  Thumbnail resize will not be done'
+        self.image_magic_exe = image_magic_exe
+        
+        self.resize_image = True
+        if image_magic_exe is None:
+            self.resize_image = False
+            print 'Warning: ImageMagicExe not set.  Thumbnail resize will not be done'
 
         self.get_image_list_from_directory()
 
@@ -220,19 +220,16 @@ class FaceCropper:
 
         print 'Saving Cropped Image.'
 
-        #run_cmd = 'D:\_cc\portables\PortablePython2.7\ImageMagick6.7.3\convert ' + photosCroppedDir + croppedFileName + ' -resample 354x425 -density 180 ' + photosCroppedDir + 'test.png' # -stroke red -fill none -draw "rectangle %d,%d %d, %d" D:\_cc\development\Python26\output2.jpg' % (f.x, f.y, f.x+f.width, f.y+f.height)
-        # test run_cmd = 'D:\_cc\portables\PortablePython2.7\ImageMagick6.7.3\convert.exe ' + photosCroppedDir + croppedFileName + ' -resize 354x425 -density 180 ' + photosCroppedDir + 'test2.jpg'
-        if os.path.exists(self.image_magic_exe):
-            run_cmd = self.image_magic_exe + ' ' + cropped_file + ' -resize 354x425 -density 180 ' + cropped_file
+        self.resize_img(cropped_file)
+    
+    def resize_img(self, src_file, target_file=None):
+        if target_file is None:
+            target_file = src_file
+        
+        if self.resize_image:
+            run_cmd = self.image_magic_exe + ' ' + src_file + ' -units PixelsPerInch  -resize 354x425 -density 180 ' + target_file
             # print run_cmd
             os.system(run_cmd)
-            #run_cmd = self.image_magic_exe + ' ' +
-
-        # test run_cmd = 'D:\_cc\portables\PortablePython2.7\ImageMagick6.7.3\convert.exe ' + photosCroppedDir + 'test2.jpg' + ' -resample 180x180 -density 180 ' + photosCroppedDir + 'test.jpg'
-        # run_cmd = imageMagickExe + photosCroppedDir + croppedFileName + ' -resample 180x180 -density 180 ' + photosCroppedDir + croppedFileName
-        #print run_cmd
-        # os.system(run_cmd)
-        # print run_cmd
 
     def test_image(self, img):
         import numpy

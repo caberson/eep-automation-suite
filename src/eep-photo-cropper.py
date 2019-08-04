@@ -39,7 +39,7 @@ DIR_EEP_PHOTOS_CROPPED_DEFAULT = eepshared.DIR_EEP_PHOTOS_CROPPED_DEFAULT
 
 DIR_CURRENT_EXECUTABLE = os.path.dirname(sys.executable)
 IMAGE_MAGIC_EXE = os.path.join(DIR_CURRENT_EXECUTABLE, "..", "ImageMagick6.7.3", "convert.exe")
-if os.name:
+if os.name != 'nt':
     IMAGE_MAGIC_EXE = 'convert'
 CROPPER_WINDOW_NAME = 'EEP_Photo_Cropper'
 
@@ -334,8 +334,6 @@ def main(argv):
     # instantiate a cropper object
     dir_cwd_path = os.path.abspath(os.getcwd())
     face_cropper = photos.cropper.FaceCropper(
-        # os.path.join(dir_cwd_path, OPTION_DIR_EEP_PHOTOS_ORIGINAL),
-        # os.path.join(dir_cwd_path, OPTION_DIR_EEP_PHOTOS_CROPPED),
         eepshared.STUDENT_PHOTOS_ORIGINAL_DIR,
         eepshared.STUDENT_PHOTOS_CROPPED_DIR,
         IMAGE_MAGIC_EXE
