@@ -56,6 +56,10 @@ def get_student_photos_cropped_dir(yr_code=None):
         yr_code = build_english_year_code()
     return os.path.join(EEP_DOC_DIR, yr_code, PHOTOS_CROPPED_FOLDER_NAME)
 
+def get_student_photos_original_dir(yr_code=None):
+    if yr_code is None:
+        yr_code = build_english_year_code()
+    return os.path.join(EEP_DOC_DIR, yr_code, PHOTOS_ORIGINAL_FOLDER_NAME)
 
 def get_donor_report_dir(yr_code=None):
     if yr_code is None:

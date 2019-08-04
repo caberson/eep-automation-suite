@@ -15,6 +15,8 @@ import cv2
 import glob
 import shutil
 
+from datetime import datetime
+
 
 #==============================================================================
 # adds current site-package folder path
@@ -287,12 +289,25 @@ def usage():
             --photodir= Original photo dir
             """
 
-def get_arguments():
+def setup_argparse():
     import argparse
     parser = argparse.ArgumentParser(description='Photo cropper.')
     parser.add_argument('--noinitdir', action="store_true")
     parser.add_argument('--photodir')
-    parser.parse_args()
+    parser.add_argument(
+        '-y',
+        '--year',
+        nargs = '?',
+        type = int,
+        default = datetime.today().year
+    )
+    parser.add_argument(
+        '-m',
+        '--month',
+        nargs = '?',
+        type = int,
+        default = datetime.today().month
+    )
 
     return parser
 
@@ -303,46 +318,37 @@ def main(argv):
     config = eepshared.get_config()
     # print config.items('path')
 
-    OPTION_INIT_DIR = 1
+    OPTION_INIT_DIR = True
     OPTION_DIR_EEP_PHOTOS_ORIGINAL = DIR_EEP_PHOTOS_ORIGINAL_DEFAULT
     OPTION_DIR_EEP_PHOTOS_CROPPED = DIR_EEP_PHOTOS_CROPPED_DEFAULT
 
-    parser = get_arguments()
-    print parser
+    parser = setup_argparse()
+    args = parser.parse_args()
 
-    try:
-        opts, args = getopt.getopt(argv, "h", ["help","noinitdir","photodir="])
-    except getopt.GetoptError:
-        print "Error"
-        sys.exit(2)
-
-    for opt, args in opts:
-        #print opt, args
-        if opt in ("-h"):
-            usage()
+    yr_code = eepshared.build_english_year_code(args.year, args.month)
+    if args.noinitdir:
+        OPTION_INIT_DIR = False
+    
+    photodir = args.photodir
+    if photodir is not None:
+        if os.path.isdir(photodir):
+            OPTION_DIR_EEP_PHOTOS_ORIGINAL = photodir
+        else:
+            print "Invalid photodir specified: {}".format(photodir)
             sys.exit(2)
-        elif opt in ("--noinitdir",):
-            OPTION_INIT_DIR = 0
-        elif opt in ("--photodir",):
-            if os.path.isdir(args):
-                OPTION_DIR_EEP_PHOTOS_ORIGINAL = args
-            else:
-                print "Invalid photodir specified: %s" % args
-                usage()
-                sys.exit(2)
-
+        
     # instantiate a cropper object
     dir_cwd_path = os.path.abspath(os.getcwd())
     face_cropper = photos.cropper.FaceCropper(
-        eepshared.STUDENT_PHOTOS_ORIGINAL_DIR,
-        eepshared.STUDENT_PHOTOS_CROPPED_DIR,
+        eepshared.get_student_photos_original_dir(yr_code),
+        eepshared.get_student_photos_cropped_dir(yr_code),
         IMAGE_MAGIC_EXE
     )
 
     # init this directory
-    if OPTION_INIT_DIR == 1:
+    if OPTION_INIT_DIR:
         # Create destination folders if needed
-        eeputil.create_required_dirs()
+        eeputil.create_required_dirs(args.year, args.month)
         face_cropper.auto_save_on_view = True
 
     # If no files, exit program
