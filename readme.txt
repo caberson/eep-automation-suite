@@ -17,11 +17,13 @@ Steps
 	Clear ending rows for example.  Make sure China tab is first and Taiwan is 2nd
 
 * Create year{seasonLetter}_eep_combined.xls.
+	./eep-merge-sheets-from-raw-excel.py --sheetnums 13 14
 	python eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/{year}{season}/{year}{season}_eep.xls --sheetnums {sheet_1_index} ... #0 based.
 	./eep-merge-sheets-from-raw-excel.py /eep/2019s/2019s_eep.xls --sheetnums 13 14
 
 	cd ~/Documents/eep/2012f
-	/Users/cc/Projects/eep/eep-merge-sheets-from-raw-excel.py ~/Documents/eep/2017s/2017s_eep.xls --sheetnums 31 32
+	/Users/cc/projects/eep-automation-suite/src/eep-merge-sheets-from-raw-excel.py --sheetnums 1 2
+	/Users/cc/projects/eep-automation-suite/src/eep-merge-sheets-from-raw-excel.py ~/Documents/eep/2017s/2017s_eep.xls --sheetnums 31 32
 
 	/Users/cc/Documents/eep/scripts/python_scripts/eep/eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/2012f/2012f_eep.xls --sheetnums 29 30
 
