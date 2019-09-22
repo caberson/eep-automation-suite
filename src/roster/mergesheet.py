@@ -32,7 +32,7 @@ import roster.sortsheet
 import roster.mergesheet
 import xlsstyles
 
-
+from util.logger import logger
 
 ROWS_USED_BY_HEADING = 3
 
@@ -126,7 +126,7 @@ def combine_sheets(raw_excel_file, sheets, out_file_name=None):
             raw_excel_file, on_demand=True, formatting_info=True
         )
     except:
-        print "Error opening file ", raw_excel_file
+        logger.error('Error opening file {}'.format(raw_excel_file))
         return
 
     # New workbook
@@ -163,7 +163,7 @@ def combine_sheets(raw_excel_file, sheets, out_file_name=None):
         sheet.colpos = colpos
         excel_row_hi = sheet.get_sheet_row_hi()
         total_rows_combined += excel_row_hi - excel_row_lo
-        print 'Sheet: ', sheet_index, ' Rows: ', excel_row_hi
+        logger.debug('Sheet: {} Rows: {}'.format(sheet_index, excel_row_hi))
 
         # Determine which columns to use.
         try:
@@ -188,6 +188,11 @@ def combine_sheets(raw_excel_file, sheets, out_file_name=None):
             sheet.colpos['student_donor_name']
         ]
         for row_count, rx in enumerate(rng):
+            # if student name is empty
+            if not sheet.get_donor_id(rx):
+                logger.debug('row {} missing donor id'.format(rx))
+                continue
+
             # +2 because one is for heading and one is for actual cell number.
             current_actual_excel_row_num = i + 2
             current_xlwt_excel_row_num = i + 1
@@ -297,7 +302,7 @@ def combine_sheets(raw_excel_file, sheets, out_file_name=None):
                     )
 
             i += 1
-    print 'Total Students: ', total_rows_combined
+    logger.debug('Total Students: {}'.format(total_rows_combined))
 
     if out_file_name is None:
         out_file = os.path.join(
@@ -328,9 +333,9 @@ def check_student_name(sheet, student_names, rownum):
             sheet.get_school(rownum) == sheet.get_school(found_index)
         ):
             status = STATUS_ERROR
-            print '\tPOSSIBLE ERROR: {} Row: {} PrevRow: {}'.format(
+            logger.warn('\tPOSSIBLE ERROR: {} Row: {} PrevRow: {}'.format(
                 student_name, rownum, found_index
-            )
+            ))
 
     except:
         #success
@@ -374,7 +379,7 @@ def print_sheetnames(raw_excel_file):
         )
         sheet_names = wb_eep.sheet_names()
         for i, name in enumerate(sheet_names):
-            print i, name.strip().encode('utf-8')
+            print('{} {}'.format(i, name.strip().encode('utf-8')))
     except:
-        print "Excel file not found: ", raw_excel_file
+        print('Excel file not found: {}'.format(raw_excel_file))
         pass
