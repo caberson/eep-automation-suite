@@ -18,6 +18,7 @@ EEP_DOC_DIR = os.getenv(
 )
 current_year = datetime.now().year
 current_month = datetime.now().month
+
 SUGGESTED_FILE_DESTINATION_FOLDER_NAME = ('/' + str(current_year) +
     ('s' if current_month <= 6 else 'f'))
 SUGGESTED_RAW_EXCEL_FILE_BASE_NA = (str(current_year) +
@@ -86,7 +87,16 @@ def build_chinese_year_code(year=None, month=None):
         month = datetime.now().month
 
     season = u'春' if month <= 6 else u'秋'
-    return '%s%s' % (str(year), season)
+    return u'{}{}'.format(year, season)
+
+def build_chinese_year_code_short(year=None, month=None):
+    if year is None:
+        year = datetime.now().year
+    
+    if len(str(year)) > 2:
+        year = str(year)[-2:]
+
+    return build_chinese_year_code(year, month)
 
 def get_config(config_file=None):
     import ConfigParser
@@ -102,3 +112,6 @@ def get_config(config_file=None):
 OUTPUT_ENCODING = 'utf-8'
 if sys.platform == 'win32':
     OUTPUT_ENCODING = 'big5'
+
+CURRENT_SEASON_CHI = build_chinese_year_code(current_year, current_month)
+CURRENT_SEASON_CHI_SHORT = build_chinese_year_code_short(current_year, current_month)

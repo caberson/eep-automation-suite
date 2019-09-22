@@ -370,16 +370,32 @@ def mark_sections(sheet, rownum, colnum):
 
     return STATUS_NORMAL
 
-def print_sheetnames(raw_excel_file):
-    """Print sheet index number and it's name.
-    """
+def get_sheetnames(raw_excel_file):
+    """Get sheet index number and name."""
     try:
         wb_eep = xlrd.open_workbook(
             raw_excel_file, on_demand=True, formatting_info=True
         )
+        print('src xls: {}'.format(raw_excel_file))
         sheet_names = wb_eep.sheet_names()
-        for i, name in enumerate(sheet_names):
-            print('{} {}'.format(i, name.strip().encode('utf-8')))
+        return sheet_names
+        # for i, name in enumerate(sheet_names):
+        #     print('{} {}'.format(i, name.strip().encode('utf-8')))
     except:
         print('Excel file not found: {}'.format(raw_excel_file))
         pass
+   
+def print_sheetnames(raw_excel_file):
+    """Print sheet index number and it's name."""
+    sheet_names = get_sheetnames(raw_excel_file)
+    for i, name in enumerate(sheet_names):
+        print('{} {}'.format(i, name.strip().encode('utf-8')))
+
+def find_latest_sheet_ids(raw_excel_file):
+    sheet_names = get_sheetnames(raw_excel_file)
+    idx = []
+    for i, name in enumerate(sheet_names):
+        if eepshared.CURRENT_SEASON_CHI_SHORT in name:
+            idx.append(i)
+
+    return idx

@@ -30,6 +30,8 @@ import eeputil
 import roster.sortsheet
 import roster.mergesheet
 
+from util.logger import logger
+
 def get_argparse():
     """Get cmd line argument parser.
     """
@@ -40,7 +42,8 @@ def get_argparse():
         eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA
     )
     default_excel_file = os.path.join(
-        eepshared.DESTINATION_DIR, default_excel_file_na
+        eepshared.DESTINATION_DIR,
+        default_excel_file_na
     )
 
     parser.add_argument(
@@ -75,7 +78,14 @@ def main():
     if not args.sheetnums:
         parser.print_help()
         roster.mergesheet.print_sheetnames(raw_excel_file)
-        sys.exit(1)
+
+        # Try to find latest sheet ids
+        found_sheetnums = roster.mergesheet.find_latest_sheet_ids(raw_excel_file)
+        use_found = raw_input('Use found sheetnums: {} (y/n)? '.format(found_sheetnums))
+        if use_found.strip().lower() == 'y':
+            args.sheetnums = found_sheetnums
+        else:
+            sys.exit(1)
 
     # Generate merged file
     out_file_name = os.path.join(
@@ -87,7 +97,7 @@ def main():
         args.sheetnums,
         out_file_name
     )
-    print("Output file: %s" % combined_file)
+    logger.debug("Output file: {}".format(combined_file))
 
     # Generate
     data = roster.sortsheet.sort(combined_file)
@@ -96,7 +106,7 @@ def main():
         eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined_sorted.xls'
     )
     sorted_icombined_out_file = roster.sortsheet.save(data, out_file_name)
-    print("Output file (sorted): %s" % sorted_icombined_out_file)
+    logger.debug("Output file (sorted): {}".format(sorted_icombined_out_file))
 
 
 # BEGIN MAIN ==================================================================
