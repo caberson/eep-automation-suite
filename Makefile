@@ -29,3 +29,5 @@ shell:
 cropper:
 	pipenv run python src/eep-photo-cropper.py
 
+combine:
+	pipenv run python src/eep-merge-sheets-from-raw-excel.py
