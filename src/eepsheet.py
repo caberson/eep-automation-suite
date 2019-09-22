@@ -89,3 +89,6 @@ class EepSheet:
 
     def get_graduation_year(self, row):
         return self.cell_value(row, self.colpos['graduation_year'])
+    
+    def get_donor_id(self, row):
+        return self.cell_value(row, self.colpos['student_donor_id'])
