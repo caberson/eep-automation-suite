@@ -31,3 +31,6 @@ cropper:
 
 combine:
 	pipenv run python src/eep-merge-sheets-from-raw-excel.py
+
+eeplist:
+	pipenv run python src/eep-generate-lists.py
