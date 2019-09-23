@@ -42,13 +42,13 @@ from eepcombinedsheet import EepCombinedSheet
 # global vars
 # Heading rows used by the data source Excel file.
 SRC_HEADING_ROWS = 1
-SHEET_TITLE_BASE = eeputil.get_chinese_title_for_time()
+SHEET_TITLE_BASE = eeputil.get_chinese_title_for_yr_mo(None, None)
 
 PROCESSED_EXCEL_FILE = (
     eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
 )
 TEMPLATE_DIR = (
-    os.path.join(os.path.dirname(os.path.realpath(__file__)), 'templates')
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'templates')
 )
 
 # TODO: Some parts of the script still uses these constants.  Need to convert
@@ -848,7 +848,10 @@ def generate_xmldata():
 
 # BEGIN MAIN ==================================================================
 if __name__ == "__main__":
-    print sys.platform
+    yr = None
+    mo = None
+
+    # print sys.platform
     try:
         processed_excel_file_na = sys.argv[1]
         PROCESSED_EXCEL_FILE = processed_excel_file_na
@@ -856,17 +859,19 @@ if __name__ == "__main__":
         pass
 
     if len(sys.argv) < 2:
-        srcExcelFile = glob.glob(eepshared.DESTINATION_DIR + '*_combined_sorted.xls')
+        destination_dir = eepshared.DESTINATION_DIR
+        srcExcelFile = glob.glob(destination_dir + '*_combined_sorted.xls')
 
         if len(srcExcelFile) == 1:
-            PROCESSED_EXCEL_FILE = srcExcelFile[0]
-        else:
-            print 'Usage:\neep-generate-lists.py %s' % PROCESSED_EXCEL_FILE
-            sys.exit(1)
-
+            use_suggestion = raw_input('use file {}? (y/n) '.format(srcExcelFile[0]))
+            if use_suggestion.strip().lower() == 'y':
+                PROCESSED_EXCEL_FILE = srcExcelFile[0]
+            else:
+                print 'Usage:\neep-generate-lists.py %s' % PROCESSED_EXCEL_FILE
+                sys.exit(1)
 
     # Create destination folders if needed.
-    eeputil.create_required_dirs()
+    eeputil.create_required_dirs(yr, mo)
 
     eeplists = EepLists(PROCESSED_EXCEL_FILE)
     eeplists.src_heading_rows = SRC_HEADING_ROWS
