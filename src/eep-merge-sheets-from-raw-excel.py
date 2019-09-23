@@ -97,7 +97,7 @@ def main():
         args.sheetnums,
         out_file_name
     )
-    logger.debug("Output file: {}".format(combined_file))
+    logger.debug(u"Output file: {}".format(out_file_name))
 
     # Generate
     data = roster.sortsheet.sort(combined_file)
