@@ -17,6 +17,8 @@ Steps
 	Clear ending rows for example.  Make sure China tab is first and Taiwan is 2nd
 
 * Create year{seasonLetter}_eep_combined.xls.
+	Use `make combine` if possible.  Otherwise, use following commands.
+
 	./eep-merge-sheets-from-raw-excel.py --sheetnums 13 14
 	python eep-merge-sheets-from-raw-excel.py  ~/Documents/eep/{year}{season}/{year}{season}_eep.xls --sheetnums {sheet_1_index} ... #0 based.
 	./eep-merge-sheets-from-raw-excel.py /eep/2019s/2019s_eep.xls --sheetnums 13 14
@@ -44,13 +46,14 @@ Steps
 	to distinguish a student from another.
 
 * Create all the lists using:
+  make eeplist
 	-- If no Excel file is specified, application will attempt to look for current season's file.
 	python ./eep-generate-lists.py  ~/Documents/eep/2013s/2013s_eep_combined_sorted.xls
 	./eep-generate-lists.py /eep/2019s/2919s_eep_combined_sorted.xls
 
 
 
-Open up tools/student-labels.doc to generate label files.
+Open up word-tools/student-labels.doc to generate label files.
 NOTE: Use BiauKaiTee if possible.
 5. Use WORD older version. Use student-name-labels.docx to create student labels.  Avery 5164/8164 label template
 	 - Filter by schl_na_len
