@@ -112,16 +112,23 @@ def remove_parenthesis_content(val, replaced=[], whitelist=[], blacklist=[]):
             # print ' ', m.group(0)
     return val
 
+def get_chinese_title_for_yr_mo(yr=None, mo=None):
+    """Returns Chinese title for the given yr, mo."""
+    yr = eepshared.current_year if yr is None else yr
+    mo = eepshared.current_month if mo is None else mo
+
+    sheet_title_base = u'{}年{}季'.format(
+        yr, (u'春' if mo <= 6 else u'秋')
+    )
+
+    return sheet_title_base
+
 def get_chinese_title_for_time(time=None):
     """Returns Chinese title for the given time."""
     if time is None:
         time = datetime.now()
-
-    sheet_title_base = u'{}年{}季'.format(
-        time.year, (u'春' if time.month <= 6 else u'秋')
-    )
-
-    return sheet_title_base
+    
+    return get_chinese_title_for_yr_mo(time.year, time.month)
 
 def load_local_site_packages():
     # adds current site-package folder path
