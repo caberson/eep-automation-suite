@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/env python
 # coding=utf-8
 # -*- coding: utf-8 -*-
 # Copyright (C) 2015 Caber Chu
@@ -63,23 +63,6 @@ colpos = {
     'comment': 14, # Was 13 before 2019.
     'comment_tw': 14,
 }
-
-""" TODO: Obsolete code. Remove later.
-COL_REGION = 1
-COL_LOCATION = 2
-COL_SCHOOL = 3
-COL_DONOR_BALANCE = 4
-COL_STUDENT_NAME = 5
-COL_SEX = 6
-COL_GRADE = 7
-COL_GRADUATION_YEAR = 8
-COL_STUDENT_DONOR_ID = 9
-COL_STUDENT_DONOR_NAME = 10
-COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL = 11
-COL_STUDENT_DONOR_DONATION_AMOUNT_US = 12
-COL_COMMENT = 13    #N
-COL_COMMENT_TW = 14 #O
-"""
 
 SHEET_COLUMNS = {
     'DEFAULT': [

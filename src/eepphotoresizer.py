@@ -1,13 +1,10 @@
-#-------------------------------------------------------------------------------
-# Name: eep-photo-resizer
-# Purpose: Resizes student photos to standard dimensions used by the generated word files.
-#
-# Author: Caber Chu
-#
-# Created: 09/07/2012
-# Copyright: (c) Caber Chu 2012
-#-------------------------------------------------------------------------------
 #!/usr/bin/env python
+# coding=utf-8
+# -*- coding: utf-8 -*-
+# Copyright (C) 2012 Caber Chu
+
+# Purpose: Resizes student photos to standard dimensions used by the generated word files.
+
 import os, sys, inspect
 import glob
 import shutil

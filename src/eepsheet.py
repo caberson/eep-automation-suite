@@ -44,10 +44,10 @@ class EepSheet:
                         not sheet.cell_value(rownum + 1, 2)
                     ):
                         excel_row_hi = rownum
-                        break;
+                        break
                 except:
                     print 'Error occured trying to get sheet_row_hi'
-                    break;
+                    break
         except:
             excel_row_hi = rownum
 

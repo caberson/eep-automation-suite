@@ -1,4 +1,8 @@
-﻿"""
+#!/usr/bin/env python
+# coding=utf-8
+# -*- coding: utf-8 -*-
+# Copyright (C) 2010 Caber Chu
+"""
 EEP donor report generator.
 
 Requirements:
@@ -6,7 +10,6 @@ Requirements:
 * win32com.client
 * Word
 """
-#!/usr/bin/env python
 
 from glob import glob
 import inspect

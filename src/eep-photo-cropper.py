@@ -1,12 +1,7 @@
-#-------------------------------------------------------------------------------
-# Name:        eep-photoCropper
-# Purpose:
-#
-# Author:      cc
-#
-# Created:     07/07/2012
-#-------------------------------------------------------------------------------
 #:!/usr/bin/env python
+# coding=utf-8
+# -*- coding: utf-8 -*-
+# Copyright (C) 2012 Caber Chu
 
 import os
 import sys

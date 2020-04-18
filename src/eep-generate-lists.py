@@ -51,25 +51,6 @@ TEMPLATE_DIR = (
     os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'templates')
 )
 
-# TODO: Some parts of the script still uses these constants.  Need to convert
-# them to the newer one so we can remove this section.
-COL_REGION = 0
-COL_LOCATION = 1
-COL_SCHOOL = 2
-COL_STUDENT_NAME = 3
-COL_SEX = 4
-COL_GRADUATION_YEAR = 5
-COL_STUDENT_DONOR_ID = 6
-COL_STUDENT_DONOR_NAME = 7
-COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL = 8
-COL_COMMENT = 9
-COL_IMPORT_ORDER_NUMBER = 10
-COL_AUTO_STUDENT_NUMBER = 11
-COL_AUTO_DONOR_STUDENT_COUNT_NUMBER = 12
-COL_SCHOOL_NAME_LENGTH = 13
-COL_STUDENT_LABEL_NAME = 14
-COL_STUDENT_NAME_EXTRA = 15
-
 
 class EepLists:
     """Class to generate various Excel lists using the prepped one.
@@ -211,19 +192,28 @@ class EepLists:
 
         return title
 
-    def generate_masterlist(self, for_region=''):
+    def generate_masterlist(self, for_region=None):
         column_titles = [
             '', 'student-name', 'sex', 'grad-yr', 'donor-id', 'donor-na',
             'donate-amt', 'comment'
         ]
         column_titles_len = len(column_titles)
 
+        cps = EepCombinedSheet.colpos
         columns = [
-            COL_AUTO_STUDENT_NUMBER,
-            COL_STUDENT_LABEL_NAME,
-            COL_SEX,
-            COL_GRADUATION_YEAR, COL_STUDENT_DONOR_ID, COL_STUDENT_DONOR_NAME,
-            COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL, COL_COMMENT
+            cps["auto_student_number"],
+            cps["student_label_name"],
+            cps["sex"],
+            cps["graduation_year"],
+            cps["student_donor_id"],
+            cps["student_donor_name"],
+            cps["student_donor_donation_amount_local"],
+            cps["comment"],
+            # COL_AUTO_STUDENT_NUMBER,
+            # COL_STUDENT_LABEL_NAME,
+            # COL_SEX,
+            # COL_GRADUATION_YEAR, COL_STUDENT_DONOR_ID, COL_STUDENT_DONOR_NAME,
+            # COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL, COL_COMMENT
         ]
 
         # Get new master list workbook.
@@ -256,7 +246,8 @@ class EepLists:
             school = sheet.get_school(current_xlrd_excel_row_num)
             current_title = region  + " " + location + " " + school
 
-            if for_region != '':
+            # filter by region
+            if for_region is not None:
                 if for_region == 't' and region not in taiwan_name_maps:
                     continue
                 elif for_region == 'c' and region in taiwan_name_maps:
@@ -821,7 +812,24 @@ def generate_xmldata():
     root = minidom.parseString(roottag)
 
     fields = ['sid', 'name', 'schoolState', 'schoolCity', 'schoolName', 'sex', 'graduationYear', 'donorNumber', 'donorName', 'scholarshipAmount', 'notes','importOrder', 'autoStudentId', 'autoDonorStudentCountNumber', 'schoolNameLength']
-    columns = [COL_AUTO_STUDENT_NUMBER, COL_STUDENT_NAME, COL_REGION, COL_LOCATION, COL_SCHOOL, COL_SEX, COL_GRADUATION_YEAR, COL_STUDENT_DONOR_ID, COL_STUDENT_DONOR_NAME, COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL, COL_COMMENT, COL_IMPORT_ORDER_NUMBER, COL_AUTO_STUDENT_NUMBER, COL_AUTO_DONOR_STUDENT_COUNT_NUMBER,COL_SCHOOL_NAME_LENGTH]
+    cps = EepCombinedSheet.colpos
+    columns = [
+        cps["auto_student_number"],
+        cps["student_name"],
+        cps["region"],
+        cps["location"],
+        cps["school"],
+        cps["sex"],
+        cps["graduation_year"],
+        cps["student_donor_id"],
+        cps["student_donor_name"],
+        cps["student_donor_donation_amount_local"],
+        cps["comment"],
+        cps["import_order_number"],
+        cps["auto_student_number"],
+        cps["auto_donor_student_count_number"],
+        cps["school_name_length"],
+    ]
 
     for current_row_count, rx in enumerate(xrange(excel_row_lo, excel_row_hi)): #sh.nrows
         current_xlrd_excel_row_num = current_row_count + SRC_HEADING_ROWS

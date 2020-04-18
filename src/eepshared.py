@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/env python
 # coding=utf-8
 # -*- coding: utf-8 -*-
 # Copyright (C) 2011 Caber Chu
@@ -107,7 +107,6 @@ def get_config(config_file=None):
     config = ConfigParser.SafeConfigParser()
     config.read(config_file)
     return config
-
 
 OUTPUT_ENCODING = 'utf-8'
 if sys.platform == 'win32':
