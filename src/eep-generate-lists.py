@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/env python
 # coding=utf-8
 # -*- coding: utf-8 -*-
 # Copyright (C) 2010 Caber Chu
@@ -42,33 +42,14 @@ from eepcombinedsheet import EepCombinedSheet
 # global vars
 # Heading rows used by the data source Excel file.
 SRC_HEADING_ROWS = 1
-SHEET_TITLE_BASE = eeputil.get_chinese_title_for_time()
+SHEET_TITLE_BASE = eeputil.get_chinese_title_for_yr_mo(None, None)
 
 PROCESSED_EXCEL_FILE = (
     eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
 )
 TEMPLATE_DIR = (
-    os.path.join(os.path.dirname(os.path.realpath(__file__)), 'templates')
+    os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'templates')
 )
-
-# TODO: Some parts of the script still uses these constants.  Need to convert
-# them to the newer one so we can remove this section.
-COL_REGION = 0
-COL_LOCATION = 1
-COL_SCHOOL = 2
-COL_STUDENT_NAME = 3
-COL_SEX = 4
-COL_GRADUATION_YEAR = 5
-COL_STUDENT_DONOR_ID = 6
-COL_STUDENT_DONOR_NAME = 7
-COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL = 8
-COL_COMMENT = 9
-COL_IMPORT_ORDER_NUMBER = 10
-COL_AUTO_STUDENT_NUMBER = 11
-COL_AUTO_DONOR_STUDENT_COUNT_NUMBER = 12
-COL_SCHOOL_NAME_LENGTH = 13
-COL_STUDENT_LABEL_NAME = 14
-COL_STUDENT_NAME_EXTRA = 15
 
 
 class EepLists:
@@ -211,19 +192,28 @@ class EepLists:
 
         return title
 
-    def generate_masterlist(self, for_region=''):
+    def generate_masterlist(self, for_region=None):
         column_titles = [
             '', 'student-name', 'sex', 'grad-yr', 'donor-id', 'donor-na',
             'donate-amt', 'comment'
         ]
         column_titles_len = len(column_titles)
 
+        cps = EepCombinedSheet.colpos
         columns = [
-            COL_AUTO_STUDENT_NUMBER,
-            COL_STUDENT_LABEL_NAME,
-            COL_SEX,
-            COL_GRADUATION_YEAR, COL_STUDENT_DONOR_ID, COL_STUDENT_DONOR_NAME,
-            COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL, COL_COMMENT
+            cps["auto_student_number"],
+            cps["student_label_name"],
+            cps["sex"],
+            cps["graduation_year"],
+            cps["student_donor_id"],
+            cps["student_donor_name"],
+            cps["student_donor_donation_amount_local"],
+            cps["comment"],
+            # COL_AUTO_STUDENT_NUMBER,
+            # COL_STUDENT_LABEL_NAME,
+            # COL_SEX,
+            # COL_GRADUATION_YEAR, COL_STUDENT_DONOR_ID, COL_STUDENT_DONOR_NAME,
+            # COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL, COL_COMMENT
         ]
 
         # Get new master list workbook.
@@ -256,7 +246,8 @@ class EepLists:
             school = sheet.get_school(current_xlrd_excel_row_num)
             current_title = region  + " " + location + " " + school
 
-            if for_region != '':
+            # filter by region
+            if for_region is not None:
                 if for_region == 't' and region not in taiwan_name_maps:
                     continue
                 elif for_region == 'c' and region in taiwan_name_maps:
@@ -353,6 +344,7 @@ class EepLists:
             ' create_checklist, receivinglist, lettersubmitlist',
             school,
         ]).encode(eepshared.OUTPUT_ENCODING)
+
         self.create_lettersubmitlist(beg_row, end_row)
         self.create_checklist(beg_row, end_row)
         self.create_receivinglist(beg_row, end_row)
@@ -390,7 +382,6 @@ class EepLists:
         #sh_new.set_show_headers ( 0 )
         #sh_new.set_print_headers( 0 )
 
-        #sh_new.default_row_height = 200
         sh_new.set_header_margin(0)
         sh_new.set_footer_margin(0)
         sh_new.set_header_str("")
@@ -400,6 +391,20 @@ class EepLists:
         sh_new.set_right_margin(0.25)
 
         return wb_new
+
+    def calculate_comment_col_height(self, value, min_height=None):
+        """Calculate row height based on comment length."""
+        if min_height is None:
+            min_height = self.DEFAULT_ROW_HEIGHT
+
+        rows = math.trunc(math.ceil(len(value) / 30.0))
+        height = rows * 300
+
+        # If calculated row height is less than min height, min height will be used.
+        if height < min_height:
+            return min_height
+
+        return height
 
     def create_lettersubmitlist(self, row_lo, row_hi):
         TGT_HEADING_ROWS = 2
@@ -446,7 +451,6 @@ class EepLists:
             0, 0, 7, 8, yr_title, self.STYLES['CELL_LISTING_TITLE']
         )
 
-
         # Total rows processed so far
         i = 0
         for rx in range(row_lo, row_hi + 1):
@@ -455,7 +459,9 @@ class EepLists:
             current_xlrd_excel_row_num = rx
             current_xlwt_excel_row_num = i + TGT_HEADING_ROWS
 
-            sh_new.row(current_xlwt_excel_row_num).height = self.DEFAULT_ROW_HEIGHT
+            student_comment = sheet.cell_value(current_xlrd_excel_row_num, sheet.colpos['comment'])
+            row_height = self.calculate_comment_col_height(student_comment)
+            sh_new.row(current_xlwt_excel_row_num).height = row_height
             sh_new.row(current_xlwt_excel_row_num).height_mismatch = 1
 
             # Row id
@@ -592,7 +598,9 @@ class EepLists:
             current_xlrd_excel_row_num = rx
             current_xlwt_excel_row_num = i + TGT_HEADING_ROWS
 
-            sh_new.row(current_xlwt_excel_row_num).height = self.DEFAULT_ROW_HEIGHT
+            student_comment = sheet.cell_value(current_xlrd_excel_row_num, sheet.colpos['comment'])
+            row_height = self.calculate_comment_col_height(student_comment)
+            sh_new.row(current_xlwt_excel_row_num).height = row_height
             sh_new.row(current_xlwt_excel_row_num).height_mismatch = 1
 
             # Row id
@@ -804,7 +812,24 @@ def generate_xmldata():
     root = minidom.parseString(roottag)
 
     fields = ['sid', 'name', 'schoolState', 'schoolCity', 'schoolName', 'sex', 'graduationYear', 'donorNumber', 'donorName', 'scholarshipAmount', 'notes','importOrder', 'autoStudentId', 'autoDonorStudentCountNumber', 'schoolNameLength']
-    columns = [COL_AUTO_STUDENT_NUMBER, COL_STUDENT_NAME, COL_REGION, COL_LOCATION, COL_SCHOOL, COL_SEX, COL_GRADUATION_YEAR, COL_STUDENT_DONOR_ID, COL_STUDENT_DONOR_NAME, COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL, COL_COMMENT, COL_IMPORT_ORDER_NUMBER, COL_AUTO_STUDENT_NUMBER, COL_AUTO_DONOR_STUDENT_COUNT_NUMBER,COL_SCHOOL_NAME_LENGTH]
+    cps = EepCombinedSheet.colpos
+    columns = [
+        cps["auto_student_number"],
+        cps["student_name"],
+        cps["region"],
+        cps["location"],
+        cps["school"],
+        cps["sex"],
+        cps["graduation_year"],
+        cps["student_donor_id"],
+        cps["student_donor_name"],
+        cps["student_donor_donation_amount_local"],
+        cps["comment"],
+        cps["import_order_number"],
+        cps["auto_student_number"],
+        cps["auto_donor_student_count_number"],
+        cps["school_name_length"],
+    ]
 
     for current_row_count, rx in enumerate(xrange(excel_row_lo, excel_row_hi)): #sh.nrows
         current_xlrd_excel_row_num = current_row_count + SRC_HEADING_ROWS
@@ -831,7 +856,10 @@ def generate_xmldata():
 
 # BEGIN MAIN ==================================================================
 if __name__ == "__main__":
-    print sys.platform
+    yr = None
+    mo = None
+
+    # print sys.platform
     try:
         processed_excel_file_na = sys.argv[1]
         PROCESSED_EXCEL_FILE = processed_excel_file_na
@@ -839,17 +867,19 @@ if __name__ == "__main__":
         pass
 
     if len(sys.argv) < 2:
-        srcExcelFile = glob.glob(eepshared.DESTINATION_DIR + '*_combined_sorted.xls')
+        destination_dir = eepshared.DESTINATION_DIR
+        srcExcelFile = glob.glob(destination_dir + '*_combined_sorted.xls')
 
         if len(srcExcelFile) == 1:
-            PROCESSED_EXCEL_FILE = srcExcelFile[0]
-        else:
-            print 'Usage:\neep-generate-lists.py %s' % PROCESSED_EXCEL_FILE
-            sys.exit(1)
-
+            use_suggestion = raw_input('use file {}? (y/n) '.format(srcExcelFile[0]))
+            if use_suggestion.strip().lower() == 'y':
+                PROCESSED_EXCEL_FILE = srcExcelFile[0]
+            else:
+                print 'Usage:\neep-generate-lists.py %s' % PROCESSED_EXCEL_FILE
+                sys.exit(1)
 
     # Create destination folders if needed.
-    eeputil.create_required_dirs()
+    eeputil.create_required_dirs(yr, mo)
 
     eeplists = EepLists(PROCESSED_EXCEL_FILE)
     eeplists.src_heading_rows = SRC_HEADING_ROWS

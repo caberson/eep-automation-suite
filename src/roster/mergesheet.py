@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/env python
 # coding=utf-8
 # -*- coding: utf-8 -*-
 # Copyright (C) 2015 Caber Chu
@@ -32,7 +32,7 @@ import roster.sortsheet
 import roster.mergesheet
 import xlsstyles
 
-
+from util.logger import logger
 
 ROWS_USED_BY_HEADING = 3
 
@@ -60,26 +60,9 @@ colpos = {
     'student_donor_name': 10,
     'student_donor_donation_amount_local': 11,
     'student_donor_donation_amount_us': 12,
-    'comment': 13,
+    'comment': 14, # Was 13 before 2019.
     'comment_tw': 14,
 }
-
-""" TODO: Obsolete code. Remove later.
-COL_REGION = 1
-COL_LOCATION = 2
-COL_SCHOOL = 3
-COL_DONOR_BALANCE = 4
-COL_STUDENT_NAME = 5
-COL_SEX = 6
-COL_GRADE = 7
-COL_GRADUATION_YEAR = 8
-COL_STUDENT_DONOR_ID = 9
-COL_STUDENT_DONOR_NAME = 10
-COL_STUDENT_DONOR_DONATION_AMOUNT_LOCAL = 11
-COL_STUDENT_DONOR_DONATION_AMOUNT_US = 12
-COL_COMMENT = 13    #N
-COL_COMMENT_TW = 14 #O
-"""
 
 SHEET_COLUMNS = {
     'DEFAULT': [
@@ -117,7 +100,7 @@ STATUS_ERROR = 2
 #
 # create a new file
 #
-def combine_sheets(raw_excel_file, sheets):
+def combine_sheets(raw_excel_file, sheets, out_file_name=None):
     excel_row_lo = ROWS_USED_BY_HEADING
 
     try:
@@ -126,7 +109,7 @@ def combine_sheets(raw_excel_file, sheets):
             raw_excel_file, on_demand=True, formatting_info=True
         )
     except:
-        print "Error opening file ", raw_excel_file
+        logger.error('Error opening file {}'.format(raw_excel_file))
         return
 
     # New workbook
@@ -163,13 +146,13 @@ def combine_sheets(raw_excel_file, sheets):
         sheet.colpos = colpos
         excel_row_hi = sheet.get_sheet_row_hi()
         total_rows_combined += excel_row_hi - excel_row_lo
-        print 'Sheet: ', sheet_index, ' Rows: ', excel_row_hi
+        logger.debug('Sheet: {} Rows: {}'.format(sheet_index, excel_row_hi))
 
         # Determine which columns to use.
         try:
             columns = SHEET_COLUMNS[str(sheet_count)]
         except:
-            columns = SHEET_COLUMNS['DEFAULT'];
+            columns = SHEET_COLUMNS['DEFAULT']
 
         main_columns_count = len(columns)
 
@@ -188,6 +171,11 @@ def combine_sheets(raw_excel_file, sheets):
             sheet.colpos['student_donor_name']
         ]
         for row_count, rx in enumerate(rng):
+            # if student name is empty
+            if not sheet.get_donor_id(rx):
+                logger.debug('row {} missing donor id'.format(rx))
+                continue
+
             # +2 because one is for heading and one is for actual cell number.
             current_actual_excel_row_num = i + 2
             current_xlwt_excel_row_num = i + 1
@@ -226,10 +214,10 @@ def combine_sheets(raw_excel_file, sheets):
             )
 
             # student name
-            student_name = sheet.get_student_name(rx)
+            original_student_name = sheet.get_student_name(rx)
             replaced = []
             student_name = eeputil.remove_parenthesis_content(
-                student_name, replaced, STUDENT_NAME_WHITELIST, STUDENT_NAME_BLACKLIST
+                original_student_name, replaced, STUDENT_NAME_WHITELIST, STUDENT_NAME_BLACKLIST
             )
             student_name_extra = u' '.join(replaced)
             # write the student label name
@@ -297,14 +285,15 @@ def combine_sheets(raw_excel_file, sheets):
                     )
 
             i += 1
-    print 'Total Students: ', total_rows_combined
+    logger.debug('Total Students: {}'.format(total_rows_combined))
 
-    out_file = os.path.join(
-        eepshared.DESTINATION_DIR,
-        eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
-    )
-    wb_new.save(out_file)
-    return out_file
+    if out_file_name is None:
+        out_file = os.path.join(
+            eepshared.DESTINATION_DIR,
+            eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
+        )
+    wb_new.save(out_file_name)
+    return out_file_name
 
 def check_student_name(sheet, student_names, rownum):
     """ Checks whether a student name exists before the rownum.
@@ -327,9 +316,9 @@ def check_student_name(sheet, student_names, rownum):
             sheet.get_school(rownum) == sheet.get_school(found_index)
         ):
             status = STATUS_ERROR
-            print '\tPOSSIBLE ERROR: {} Row: {} PrevRow: {}'.format(
+            logger.warn('\tPOSSIBLE ERROR: {} Row: {} PrevRow: {}'.format(
                 student_name, rownum, found_index
-            )
+            ))
 
     except:
         #success
@@ -364,16 +353,32 @@ def mark_sections(sheet, rownum, colnum):
 
     return STATUS_NORMAL
 
-def print_sheetnames(raw_excel_file):
-    """Print sheet index number and it's name.
-    """
+def get_sheetnames(raw_excel_file):
+    """Get sheet index number and name."""
     try:
         wb_eep = xlrd.open_workbook(
             raw_excel_file, on_demand=True, formatting_info=True
         )
+        print('src xls: {}'.format(raw_excel_file))
         sheet_names = wb_eep.sheet_names()
-        for i, name in enumerate(sheet_names):
-            print i, name.strip().encode('utf-8')
+        return sheet_names
+        # for i, name in enumerate(sheet_names):
+        #     print('{} {}'.format(i, name.strip().encode('utf-8')))
     except:
-        print "Excel file not found: ", raw_excel_file
+        print('Excel file not found: {}'.format(raw_excel_file))
         pass
+   
+def print_sheetnames(raw_excel_file):
+    """Print sheet index number and it's name."""
+    sheet_names = get_sheetnames(raw_excel_file)
+    for i, name in enumerate(sheet_names):
+        print('{} {}'.format(i, name.strip().encode('utf-8')))
+
+def find_latest_sheet_ids(raw_excel_file):
+    sheet_names = get_sheetnames(raw_excel_file)
+    idx = []
+    for i, name in enumerate(sheet_names):
+        if eepshared.CURRENT_SEASON_CHI_SHORT in name:
+            idx.append(i)
+
+    return idx

@@ -1,0 +1,22 @@
+[requires]
+
+python_version = "2.7"
+
+
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+opencv-python = "*"
+xlrd = "*"
+xlwt = "*"
+xlutils = "*"
+
+
+[dev-packages]
+

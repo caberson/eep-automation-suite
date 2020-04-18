@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding=utf-8
 # -*- coding: utf-8 -*-
 # Copyright (C) 2011 Caber Chu
@@ -20,31 +20,30 @@ Merge sheet 11 and 12.  Sheets are 0 based.
 # Standard module imports.
 import sys
 import os
-import math
 
 # 3rd party module imports.
 
 # Custom module imports.
 import eepshared
 import eeputil
-from eepsheet import EepSheet
 
 import roster.sortsheet
 import roster.mergesheet
-import xlsstyles
 
+from util.logger import logger
 
 def get_argparse():
     """Get cmd line argument parser.
     """
     import argparse
     parser = argparse.ArgumentParser(
-            description='Merges Excel sheets into a new file.')
+        description='Merges Excel sheets into a new file.')
     default_excel_file_na = '{}.xls'.format(
         eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA
     )
     default_excel_file = os.path.join(
-        eepshared.DESTINATION_DIR, default_excel_file_na
+        eepshared.DESTINATION_DIR,
+        default_excel_file_na
     )
 
     parser.add_argument(
@@ -62,26 +61,54 @@ def get_argparse():
 
     return parser
 
-# BEGIN MAIN ==================================================================
-if __name__ == "__main__":
+def main():
+    """Main runner if invoked directly
+    """
     parser = get_argparse()
     args = parser.parse_args()
     raw_excel_file = args.rawexcelfile
+    print("Excel File: %s" % raw_excel_file)
+    print("Destination Folder: %s" % eepshared.DESTINATION_DIR)
     # print sys.platform
+
+    # Create destination folders if needed
+    eeputil.create_required_dirs()
 
     # If 'sheetnums' is not specified, print out the sheets in the src Excel file.
     if not args.sheetnums:
         parser.print_help()
         roster.mergesheet.print_sheetnames(raw_excel_file)
-        sys.exit(1)
 
-    # Create destination folders if needed
-    eeputil.create_required_dirs()
+        # Try to find latest sheet ids
+        found_sheetnums = roster.mergesheet.find_latest_sheet_ids(raw_excel_file)
+        use_found = raw_input('Use found sheetnums: {} (y/n)? '.format(found_sheetnums))
+        if use_found.strip().lower() == 'y':
+            args.sheetnums = found_sheetnums
+        else:
+            sys.exit(1)
 
-    out_file = '/Users/cc/Documents/eep/2015f/2015f_eep_combined.xls'
-    out_file = roster.mergesheet.combine_sheets(raw_excel_file, args.sheetnums)
-    print "Out file:", out_file
+    # Generate merged file
+    out_file_name = os.path.join(
+        eepshared.DESTINATION_DIR,
+        eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined.xls'
+    )
+    combined_file = roster.mergesheet.combine_sheets(
+        raw_excel_file,
+        args.sheetnums,
+        out_file_name
+    )
+    logger.debug(u"Output file: {}".format(out_file_name))
 
-    data = roster.sortsheet.sort(out_file)
-    sorted_out_file = roster.sortsheet.save(data)
-    print "Out file (sorted): ", sorted_out_file
+    # Generate
+    data = roster.sortsheet.sort(combined_file)
+    out_file_name = os.path.join(
+        eepshared.DESTINATION_DIR,
+        eepshared.SUGGESTED_RAW_EXCEL_FILE_BASE_NA + '_combined_sorted.xls'
+    )
+    sorted_icombined_out_file = roster.sortsheet.save(data, out_file_name)
+    logger.debug("Output file (sorted): {}".format(sorted_icombined_out_file))
+
+
+# BEGIN MAIN ==================================================================
+if __name__ == "__main__":
+    main()

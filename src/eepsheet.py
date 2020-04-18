@@ -44,10 +44,10 @@ class EepSheet:
                         not sheet.cell_value(rownum + 1, 2)
                     ):
                         excel_row_hi = rownum
-                        break;
+                        break
                 except:
                     print 'Error occured trying to get sheet_row_hi'
-                    break;
+                    break
         except:
             excel_row_hi = rownum
 
@@ -89,3 +89,6 @@ class EepSheet:
 
     def get_graduation_year(self, row):
         return self.cell_value(row, self.colpos['graduation_year'])
+    
+    def get_donor_id(self, row):
+        return self.cell_value(row, self.colpos['student_donor_id'])
