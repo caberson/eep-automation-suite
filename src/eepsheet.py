@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# coding=utf-8
+# -*- coding: utf-8 -*-
+
 class EepSheet:
     """EEP Excel sheet class.
     """
@@ -92,3 +96,8 @@ class EepSheet:
     
     def get_donor_id(self, row):
         return self.cell_value(row, self.colpos['student_donor_id'])
+
+    def get_country(self, row):
+        taiwan_name_maps = [u'臺灣', u'台灣']
+        r = self.get_region(row)
+        return 't' if r in taiwan_name_maps else 'c'
