@@ -23,6 +23,8 @@ SUGGESTED_FILE_DESTINATION_FOLDER_NAME = ('/' + str(current_year) +
     ('s' if current_month <= 6 else 'f'))
 SUGGESTED_RAW_EXCEL_FILE_BASE_NA = (str(current_year) +
     ('s' if current_month <= 6 else 'f') + '_eep')
+SUGGESTED_COMBINED_EXCEL_FILE_BASE_NA = (str(current_year) +
+    ('s' if current_month <= 6 else 'f') + '_eep_combined_sorted')
 DESTINATION_DIR = (
     EEP_DOC_DIR +
     SUGGESTED_FILE_DESTINATION_FOLDER_NAME + '/'
