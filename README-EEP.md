@@ -55,7 +55,7 @@ Steps
 
 Open up word-tools/student-labels.doc to generate label files.
 NOTE: Use BiauKaiTee if possible.
-5. Use WORD older version. Use student-name-labels.docx to create student labels.  Avery 5164/8164 label template
+5. Use WORD older version. Use student-name-labels.docx to create student labels.  Avery US Letter 5164/8164 label template
 	 - Filter by schl_na_len
 	 - Merge to new document
 	 - Inspect new document
