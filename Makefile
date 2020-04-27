@@ -32,5 +32,16 @@ cropper:
 combine:
 	pipenv run python src/eep-merge-sheets-from-raw-excel.py
 
+eeplist-help:
+	pipenv run python src/eep-generate-lists.py --help
+
 eeplist:
-	pipenv run python src/eep-generate-lists.py
+	clear
+	rm -rf documents_inspect
+	pipenv run python src/eep-generate-lists.py ${ARGS}
+
+eeplist-t:
+	# Taiwan only lists
+	clear
+	rm -rf documents_inspect
+	pipenv run python src/eep-generate-lists.py --combinedlists ${ARGS}
