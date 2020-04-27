@@ -15,12 +15,14 @@ TODO: Refactor code in this script.
 """
 
 # Standard module imports.
+import argparse
 import sys
 import os
 import glob
-from decimal import *
 import string
 import math
+from datetime import datetime
+from decimal import *
 
 # 3rd party module imports.
 import xlrd
@@ -37,6 +39,7 @@ from xlutils.save import save
 import eepshared
 import eeputil
 from eepcombinedsheet import EepCombinedSheet
+from util.logger import logger
 
 # TODO: Move these constants into the EepLists class.
 # global vars
@@ -116,6 +119,9 @@ class EepLists:
         self.data_sheet = EepCombinedSheet(self.raw_data_sheet)
         self.init_workbook_templates()
 
+        self.filter_country = None
+        self.build_combined_lists = False
+
     def load_data_file(self, excel_file_name):
         # open eep file
         try:
@@ -130,27 +136,37 @@ class EepLists:
         self.data_sheet_row_hi = self.raw_data_sheet.nrows
         print "EXCEL EEP ROWS: ", self.data_sheet_row_hi
 
+    def open_workbook(self, file_name):
+        return xlrd.open_workbook(
+            os.path.join(TEMPLATE_DIR, file_name),
+            formatting_info=True,
+        )
+
     def init_workbook_templates(self):
         # create new template workbooks for copying later
         try:
             self.templates = {
-                'lettersubmitlist': xlrd.open_workbook(
-                    os.path.join(TEMPLATE_DIR, 'template-lettersubmitlist-students.xls'),
-                    formatting_info=True
-                ),
-                'checklist': xlrd.open_workbook(
-                    os.path.join(TEMPLATE_DIR, 'template-checklist-students.xls'),
-                    formatting_info=True
-                ),
-                'receivinglist': xlrd.open_workbook(
-                    os.path.join(TEMPLATE_DIR, 'template-receivinglist-students.xls'),
-                    formatting_info=True
-                ),
+                'combinedcheckletterlist': self.open_workbook('template-combined-checklist-lettersubmit-students.xls'),
+                'lettersubmitlist': self.open_workbook('template-lettersubmitlist-students.xls'),
+                'checklist': self.open_workbook('template-checklist-students.xls'),
+                'receivinglist': self.open_workbook('template-receivinglist-students.xls'),
+                # 'lettersubmitlist': xlrd.open_workbook(
+                #     os.path.join(TEMPLATE_DIR, 'template-lettersubmitlist-students.xls'),
+                #     formatting_info=True,
+                # ),
+                # 'checklist': xlrd.open_workbook(
+                #     os.path.join(TEMPLATE_DIR, 'template-checklist-students.xls'),
+                #     formatting_info=True,
+                # ),
+                # 'receivinglist': xlrd.open_workbook(
+                #     os.path.join(TEMPLATE_DIR, 'template-receivinglist-students.xls'),
+                #     formatting_info=True,
+                # ),
             }
-        except:
-            print 'No template files found.'
-            print TEMPLATE_DIR
-            sys.exit()
+        except Exception as err:
+            print(err)
+            print('No template files found.')
+            print(TEMPLATE_DIR)
 
     def get_new_masterlist_wb(self, column_titles):
         cw = self.CHAR_WIDTH
@@ -297,7 +313,8 @@ class EepLists:
         )
         wb_masterlist.save(output_file)
 
-    def process_schools(self):
+    def process_schools(self, filter_country=None, build_combined_lists=False):
+        filter_country = 't'
         excel_row_hi = self.data_sheet_row_hi
         sheet = self.data_sheet
         section_begin_row_num = self.src_heading_rows
@@ -310,23 +327,27 @@ class EepLists:
 
             # If there are more rows, check for school change.
             if i + 1 < excel_row_hi:
-                next_school = sheet.get_school(i + 1);
+                next_school = sheet.get_school(i + 1)
                 if current_school == next_school:
                     continue
 
-            # School is going to change or this is the last row.
-            school_count += 1
-            print 'Process school #{} {} @ {}-{}'.format(
-                school_count, current_school.encode('utf-8'),
-                section_begin_row_num, i
-            )
+            # If filter by country, skip non-matched schools
+            if filter_country is None or sheet.get_country(i) == filter_country:
+                # School is going to change or this is the last row.
+                school_count += 1
+                print('Process school #{} {} @ {}-{}'.format(
+                    school_count, current_school.encode('utf-8'),
+                    section_begin_row_num, i
+                ))
 
-            self.generate_school_lists(section_begin_row_num, i)
+                self.generate_school_lists(section_begin_row_num, i, build_combined_lists)
+            else:
+                print(u'Skipping {}'.format(current_school))
 
             last_school = current_school
             section_begin_row_num = i + 1
 
-    def generate_school_lists(self, beg_row, end_row):
+    def generate_school_lists(self, beg_row, end_row, build_combined_lists=False):
         sheet = self.data_sheet
         try:
             region = sheet.get_region(beg_row)
@@ -335,18 +356,22 @@ class EepLists:
         except:
             return
 
-        output = ' '.join([
-            str(beg_row),
-            'to',
-            str(end_row),
-            ' = ',
-            str(end_row - beg_row + 1),
-            ' create_checklist, receivinglist, lettersubmitlist',
-            school,
-        ]).encode(eepshared.OUTPUT_ENCODING)
+        # For debugging purpose
+        # output = ' '.join([
+        #     str(beg_row),
+        #     'to',
+        #     str(end_row),
+        #     ' = ',
+        #     str(end_row - beg_row + 1),
+        #     ' create_checklist, receivinglist, lettersubmitlist',
+        #     school,
+        # ]).encode(eepshared.OUTPUT_ENCODING)
 
-        self.create_lettersubmitlist(beg_row, end_row)
-        self.create_checklist(beg_row, end_row)
+        if build_combined_lists:
+            self.create_combined_check_letter_list(beg_row, end_row)
+        else:
+            self.create_checklist(beg_row, end_row)
+            self.create_lettersubmitlist(beg_row, end_row)
         self.create_receivinglist(beg_row, end_row)
 
     def get_new_lettersubmitlist_wb(self):
@@ -398,10 +423,11 @@ class EepLists:
             min_height = self.DEFAULT_ROW_HEIGHT
 
         rows = math.trunc(math.ceil(len(value) / 30.0))
-        height = rows * 300
+        # height = rows * 300
+        height = rows * 400
 
         # If calculated row height is less than min height, min height will be used.
-        if height < min_height:
+        if min_height is not None and height < min_height:
             return min_height
 
         return height
@@ -504,14 +530,13 @@ class EepLists:
 
             i += 1
 
-        output_file_name = u'lsl{}.xls'.format(sheet_title)
+        output_file_name = u'{}-lsl.xls'.format(sheet_title)
         output_file = os.path.join(
             eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
             'lettersubmitlist',
             output_file_name
         )
         wb_new.save(output_file)
-        # End
 
     def get_new_checklist_wb(self):
         """Get a new checklist workbook object.
@@ -545,6 +570,7 @@ class EepLists:
         sh_new.set_right_margin(0.25)
 
         return wb_new
+ 
 
     def create_checklist(self, row_lo, row_hi):
         TGT_HEADING_ROWS = 2
@@ -641,14 +667,13 @@ class EepLists:
 
             i += 1
 
-        output_file_name = u'cl{}.xls'.format(sheet_title)
+        output_file_name = u'{}-cl.xls'.format(sheet_title)
         output_file = os.path.join(
             eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
             'checkinglist',
             output_file_name
         )
         wb_new.save(output_file)
-        #end
 
     def get_new_receivinglist_wb(self):
         """Create a new receiving list workbook object.
@@ -793,13 +818,152 @@ class EepLists:
 
             i += 1
 
-        output_file_name = u'rl{}.xls'.format(sheet_title)
+        output_file_name = u'{}-rl.xls'.format(sheet_title)
         output_file = os.path.join(
             eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
             'receivinglist',
             output_file_name
         )
         wb_new.save(output_file)
+
+    def get_new_combined_check_letter_list_wb(self):
+        """Get a new combined checklist workbook object.
+        """
+        wb_new = copy(self.templates['combinedcheckletterlist'])
+
+        sh_new = wb_new.get_sheet(0)
+        sh_new.portrait = 0
+        # Modify dynamic values
+        cw = self.CHAR_WIDTH
+        # Attendence check
+        sh_new.col(0).width = math.trunc(6.15 * cw)
+        # Letter submission check
+        sh_new.col(1).width = math.trunc(6.15 * cw)
+        # student name
+        sh_new.col(3).width = math.trunc(10 * cw)
+        # graduation year
+        sh_new.col(5).width = math.trunc(6 * cw)
+        # Donor id
+        sh_new.col(6).width = math.trunc(5.5 * cw)
+        # donor name
+        sh_new.col(7).width = math.trunc(22 * cw)
+        # Comments
+        sh_new.col(9).width = math.trunc(52 * cw)
+
+        # sh_new.portrait = 0
+        sh_new.set_header_margin(0)
+        sh_new.set_footer_margin(0)
+        sh_new.set_header_str("")
+        sh_new.set_footer_str("")
+        sh_new.set_top_margin(0.30)
+        sh_new.set_left_margin(0.25)
+        sh_new.set_right_margin(0.25)
+
+        return wb_new
+ 
+    def create_combined_check_letter_list(self, row_lo, row_hi):
+        TGT_HEADING_ROWS = 2
+        wb_new = self.get_new_combined_check_letter_list_wb()
+        sh_new = wb_new.get_sheet(0)
+        sheet = self.data_sheet
+
+        list_columns = [
+            None,
+            None,
+            None,
+            sheet.colpos['student_label_name'],
+            sheet.colpos['sex'],
+            sheet.colpos['graduation_year'],
+            sheet.colpos['student_donor_id'],
+            sheet.colpos['student_donor_name'],
+            sheet.colpos['student_donor_donation_amount_local'],
+            sheet.colpos['comment'],
+        ]
+
+        no_parenthesis_removal_columns = [
+            sheet.colpos['comment'],
+            sheet.colpos['student_label_name'],
+        ]
+
+        centered_columns = [
+            sheet.colpos['student_donor_id'],
+            sheet.colpos['sex']
+        ]
+
+        # Title
+        region = sheet.get_region(row_lo)
+        location = sheet.get_location(row_lo)
+        school = sheet.get_school(row_lo)
+        sheet_title = region  + " " + location + " " + school
+        sh_new.write_merge(0, 0, 0, 6, sheet_title, self.STYLES['CELL_LISTING_TITLE'])
+
+        # Year
+        yr_title = SHEET_TITLE_BASE + u'對口救助學生名冊'
+        sh_new.write_merge(0, 0, 7, 8, yr_title, self.STYLES['CELL_LISTING_TITLE'])
+
+        # Centered columns
+        centered_columns = [
+            sheet.colpos['sex'],
+            sheet.colpos['graduation_year'],
+            sheet.colpos['student_donor_id']
+        ]
+
+        i = 0   # total rows processed so far
+        for rx in range(row_lo, row_hi + 1): #sh.nrows
+            current_actual_excel_row_num = i + 3 #1 for heading and 1 for actual cell number
+            current_xlrd_excel_row_num = rx
+            current_xlwt_excel_row_num = i + TGT_HEADING_ROWS
+
+            student_comment = sheet.cell_value(current_xlrd_excel_row_num, sheet.colpos['comment'])
+            row_height = self.calculate_comment_col_height(student_comment)
+            sh_new.row(current_xlwt_excel_row_num).height = row_height
+            sh_new.row(current_xlwt_excel_row_num).height_mismatch = 1
+
+            # Row id
+            studentIDColumn = 2
+            sh_new.write(current_xlwt_excel_row_num, studentIDColumn, i + 1, self.STYLES['CELL_LISTING_CENTER'])
+
+            current_column = 0
+            # cx = column position
+            for cx in list_columns:
+                if cx is not None:
+                    if cx in centered_columns:
+                        cell_style = self.STYLES['CELL_LISTING_CENTER']
+                    else:
+                        cell_style = self.STYLES['CELL_LISTING']
+
+                    cell_val = sheet.cell_value(current_xlrd_excel_row_num, cx)
+
+                    if cx not in no_parenthesis_removal_columns:
+                        cell_val = eeputil.remove_parenthesis_content(cell_val)
+                    else:
+                        cell_style = self.STYLES['CELL_LISTING_WRAP']
+
+                    # If name column
+                    if cx in [sheet.colpos['student_label_name']]:
+                        dashPosition = cell_val.find(u'-')
+
+                        if dashPosition >= 0 and len(cell_val) - dashPosition > 2:
+                            cell_val = cell_val[:dashPosition] + "\n" + cell_val[dashPosition:]
+                            # Also change cellstyle to wrap
+                            cell_style = self.STYLES['CELL_LISTING_WRAP']
+
+                    sh_new.write(
+                        current_xlwt_excel_row_num, current_column,
+                        eeputil.clean_text(cell_val), cell_style
+                    )
+                current_column += 1
+
+            i += 1
+
+        output_file_name = u'{}-combined-cl.xls'.format(sheet_title)
+        output_file = os.path.join(
+            eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
+            'checkinglist',
+            output_file_name
+        )
+        wb_new.save(output_file)
+
 # END CLASS
 
 def generate_xmldata():
@@ -853,40 +1017,100 @@ def generate_xmldata():
         'EEPStudents.xml', 'w'
     )).write(root.toxml().encode('UTF-8'))
 
+def get_argparse():
+    """Get cmd line argument parser."""
+    parser = argparse.ArgumentParser(
+        description='Generate various EEP Excel lists')
+    default_excel_file_na = '{}.xls'.format(
+        eepshared.SUGGESTED_COMBINED_EXCEL_FILE_BASE_NA
+    )
+    default_excel_file = os.path.join(
+        eepshared.DESTINATION_DIR,
+        default_excel_file_na
+    )
 
-# BEGIN MAIN ==================================================================
-if __name__ == "__main__":
-    yr = None
-    mo = None
+    now = datetime.now()
 
-    # print sys.platform
+    parser.add_argument(
+        'src_excel_file',
+        nargs='?',
+        default=default_excel_file,
+        help='Source Excel file name (default: %(default)s)',
+    )
+    parser.add_argument(
+        '--yr',
+        nargs='?',
+        default=now.year,
+        type=int,
+        help='List year (default: %(default)s)'
+    )
+    parser.add_argument(
+        '--mo',
+        nargs='?',
+        default=now.month,
+        type=int,
+        help='List month (default: %(default)s)'
+    )
+    parser.add_argument(
+        '--destdir',
+        dest='dest_dir',
+        nargs='?',
+        # default=eepshared.DESTINATION_DIR,
+        help='Destination dir (default: %(default)s)'
+    )
+    parser.add_argument(
+        '--country',
+        choices=['t', 'c'],
+        help='Limit to country (t = Taiwan, c = China)'
+    )
+    parser.add_argument(
+        '--combinedlists',
+        dest='build_combined_lists',
+        action='store_true',
+        help='Combine check and letter receiving lists',
+    )
+
+    return parser
+
+def main(args):
+    yr = args.yr
+    mo = args.mo 
+
     try:
-        processed_excel_file_na = sys.argv[1]
+        processed_excel_file_na = args.src_excel_file
         PROCESSED_EXCEL_FILE = processed_excel_file_na
     except:
         pass
 
-    if len(sys.argv) < 2:
-        destination_dir = eepshared.DESTINATION_DIR
-        srcExcelFile = glob.glob(destination_dir + '*_combined_sorted.xls')
+    if args.dest_dir is not None:
+        destination_dir = args.dest_dir
+        src_excel_file = glob.glob(destination_dir + '*_combined_sorted.xls')
 
-        if len(srcExcelFile) == 1:
-            use_suggestion = raw_input('use file {}? (y/n) '.format(srcExcelFile[0]))
+        if len(src_excel_file) == 1:
+            use_suggestion = raw_input('use file {}? (y/n) '.format(src_excel_file[0]))
             if use_suggestion.strip().lower() == 'y':
-                PROCESSED_EXCEL_FILE = srcExcelFile[0]
+                PROCESSED_EXCEL_FILE = src_excel_file[0]
             else:
-                print 'Usage:\neep-generate-lists.py %s' % PROCESSED_EXCEL_FILE
-                sys.exit(1)
+                return
 
     # Create destination folders if needed.
     eeputil.create_required_dirs(yr, mo)
 
     eeplists = EepLists(PROCESSED_EXCEL_FILE)
     eeplists.src_heading_rows = SRC_HEADING_ROWS
+    eeplists.build_combined_lists = args.build_combined_lists
 
     # Generate master lists.
     # Separate China and Taiwan into different lists.
     eeplists.generate_masterlist('c')
     eeplists.generate_masterlist('t')
 
-    eeplists.process_schools()
+    eeplists.process_schools(args.country, args.build_combined_lists)
+
+
+# BEGIN MAIN ==================================================================
+if __name__ == "__main__":
+    print("Platform: {}".format(sys.platform))    
+    args = get_argparse().parse_args()
+    print("Arguments: ", args)
+    main(args)
