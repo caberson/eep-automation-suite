@@ -12,6 +12,26 @@ https://secure.simplistix.co.uk/svn/xlwt/trunk/xlwt/examples/xlwt_easyxf_simple_
 re http://gskinner.com/RegExr/
 
 TODO: Refactor code in this script.
+
+Usage:
+usage: eep-generate-lists.py [-h] [--yr [YR]] [--mo [MO]]
+                             [--destdir [DEST_DIR]] [--country {t,c}]
+                             [--combinedlists]
+                             [src_excel_file]
+
+Generate various EEP Excel lists
+
+positional arguments:
+  src_excel_file        Source Excel file name (default: /Users/cc/Documents/e
+                        ep/2020s/2020s_eep_combined_sorted.xls)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --yr [YR]             List year (default: 2020)
+  --mo [MO]             List month (default: 4)
+  --destdir [DEST_DIR]  Destination dir (default: None)
+  --country {t,c}       Limit to country (t = Taiwan, c = China)
+  --combinedlists       Combine check and letter receiving lists
 """
 
 # Standard module imports.
