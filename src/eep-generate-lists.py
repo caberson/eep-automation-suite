@@ -41,6 +41,7 @@ import os
 import glob
 import string
 import math
+import shutil
 from datetime import datetime
 from decimal import *
 
@@ -60,6 +61,7 @@ import eepshared
 import eeputil
 from eepcombinedsheet import EepCombinedSheet
 from util.logger import logger
+from util.dir import create_directories
 
 # TODO: Move these constants into the EepLists class.
 # global vars
@@ -334,7 +336,6 @@ class EepLists:
         wb_masterlist.save(output_file)
 
     def process_schools(self, filter_country=None, build_combined_lists=False):
-        filter_country = 't'
         excel_row_hi = self.data_sheet_row_hi
         sheet = self.data_sheet
         section_begin_row_num = self.src_heading_rows
@@ -360,12 +361,87 @@ class EepLists:
                     section_begin_row_num, i
                 ))
 
-                self.generate_school_lists(section_begin_row_num, i, build_combined_lists)
+                # self.generate_school_lists(section_begin_row_num, i, build_combined_lists)
             else:
                 print(u'Skipping {}'.format(current_school))
 
             last_school = current_school
             section_begin_row_num = i + 1
+    
+    def create_school_folders(self, filter_country=None):
+        filter_country = 't'
+        excel_row_hi = self.data_sheet_row_hi
+        sheet = self.data_sheet
+        section_begin_row_num = self.src_heading_rows
+        section_end_row_num = None
+        last_school = sheet.get_school(section_begin_row_num + 1)
+        school_count = 0
+        current_row_count = 0
+
+        unique_schools = []
+        for i in xrange(self.src_heading_rows, excel_row_hi):
+            r = sheet.get_row(i)
+            country = r[0].value
+            region = r[1].value
+            school = r[2].value
+            folder = u"{}-{}-{}".format(country, region, school)
+            tmp = (country, region, school, folder)
+
+            current_school = sheet.get_school(i)
+
+            # If there are more rows, check for school change.
+            if i + 1 < excel_row_hi:
+                next_school = sheet.get_school(i + 1)
+                if current_school == next_school:
+                    continue
+
+            # If filter by country, skip non-matched schools
+            if filter_country is None or sheet.get_country(i) == filter_country:
+                # School is going to change or this is the last row.
+                school_count += 1
+                print('Process school #{} {} @ {}-{}'.format(
+                    school_count, current_school.encode('utf-8'),
+                    section_begin_row_num, i
+                ))
+
+                if filter_country is None or filter_country == sheet.get_country(i):
+                    unique_schools.append(tmp)
+            else:
+                print(u'Skipping {}'.format(current_school))
+
+            last_school = current_school
+            section_begin_row_num = i + 1
+        
+        folders = [os.path.join(eepshared.DESTINATION_DIR, "_schools", data[3]) for data in unique_schools]
+        create_directories(folders)
+        for i in unique_schools:
+            to_copy = []
+            (country, region, school, folder) = i
+
+            f = os.path.join(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR, "checkinglist")
+            ff = u"{}/{} {} {}-*".format(f, country, region, school)
+            files = glob.glob(ff)
+            [to_copy.append(f) for f in files]
+
+            f = os.path.join(eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR, "receivinglist")
+            ff = u"{}/{} {} {}-*".format(f, country, region, school)
+            files = glob.glob(ff)
+            [to_copy.append(f) for f in files]
+
+            f = os.path.join(eepshared.STUDENT_NAME_LABELS_DIR, "doc")
+            ff = u"{}/{} {} {}-*".format(f, country, region, school)
+            files = glob.glob(ff)
+            [to_copy.append(f) for f in files]
+
+            f = os.path.join(eepshared.STUDENT_NAME_LABELS_DIR, "pdf")
+            ff = u"{}/{} {} {}-*".format(f, country, region, school)
+            files = glob.glob(ff)
+            [to_copy.append(f) for f in files]
+
+            for f in to_copy:
+                dest = os.path.join(eepshared.DESTINATION_DIR, "_schools", folder) 
+                shutil.copy(f, dest)
+
 
     def generate_school_lists(self, beg_row, end_row, build_combined_lists=False):
         sheet = self.data_sheet
@@ -1084,6 +1160,12 @@ def get_argparse():
         help='Limit to country (t = Taiwan, c = China)'
     )
     parser.add_argument(
+        '--no-masterlists',
+        dest='generate_master_lists',
+        action='store_false',
+        help='Generate master lists?',
+    )
+    parser.add_argument(
         '--combinedlists',
         dest='build_combined_lists',
         action='store_true',
@@ -1122,10 +1204,14 @@ def main(args):
 
     # Generate master lists.
     # Separate China and Taiwan into different lists.
-    eeplists.generate_masterlist('c')
-    eeplists.generate_masterlist('t')
+    if args.generate_master_lists:
+        eeplists.generate_masterlist('c')
+        eeplists.generate_masterlist('t')
 
     eeplists.process_schools(args.country, args.build_combined_lists)
+
+    # TODO: Make an option to run this
+    # eeplists.create_school_folders(args.country)
 
 
 # BEGIN MAIN ==================================================================
