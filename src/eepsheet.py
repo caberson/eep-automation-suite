@@ -28,6 +28,9 @@ class EepSheet:
 
     def max_rows(self):
         return self.sheet.nrows
+    
+    def get_row(self, row_num):
+        return self.sheet.row(row_num)
 
     def get_sheet_row_hi(self):
         """Return sheet's 'last row' based on whether the first 3 columns' values.
