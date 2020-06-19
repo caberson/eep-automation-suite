@@ -1,4 +1,15 @@
-Steps
+
+Quick Start
+======================
+* `make combine`
+* Check and fix errors in the combined Excel file.
+* Open up combine sorted file.  Fix names and save file.
+* `make eeplist`
+* Open virtualbox and run windows.
+
+
+
+Detailed Steps
 ======================
 * pipenv shell
 
