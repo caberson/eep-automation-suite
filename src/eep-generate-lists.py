@@ -361,7 +361,7 @@ class EepLists:
                     section_begin_row_num, i
                 ))
 
-                # self.generate_school_lists(section_begin_row_num, i, build_combined_lists)
+                self.generate_school_lists(section_begin_row_num, i, build_combined_lists)
             else:
                 print(u'Skipping {}'.format(current_school))
 
