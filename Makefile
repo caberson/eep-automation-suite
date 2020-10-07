@@ -41,7 +41,7 @@ eeplist:
 	pipenv run python src/eep-generate-lists.py ${ARGS}
 
 eeplist-t:
-	# Taiwan only lists, combine check & letter receiving lists
+	# Taiwan only lists, combine check & letter submit lists
 	clear
 	rm -rf documents_inspect
 	pipenv run python src/eep-generate-lists.py --country t --combinedlists ${ARGS}
