@@ -174,7 +174,8 @@ class FaceCropper:
         self.draw_rect(vis, self.current_rect, (0, 255, 0))
 
         x1, y1, x2, y2 = self.current_rect
-        draw_str(vis, (x2 - 175, y2 - 5), 'file: %s' % file_base_name)
+        msg = "file: {}".format(file_base_name)
+        draw_str(vis, (x2 - 175, y2 - 5), msg)
 
         return vis
         #cv2.imshow('photosToCrop', vis)

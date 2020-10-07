@@ -8,3 +8,4 @@ def create_directories(directory_list):
         except OSError, e:
             if e.errno != errno.EEXIST:
                 raise
+
