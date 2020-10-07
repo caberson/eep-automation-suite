@@ -4,8 +4,13 @@ Quick Start
 * `make combine`
 * Check and fix errors in the combined Excel file.
 * Open up combine sorted file.  Fix names and save file.
-* `make eeplist`
+* `make eeplist` or `make eeplist-t`.  `make eeplist-t`  generates Taiwan only schools and combines checking and letter submission lists.
+* Delete all files on local machine /Users/caber/Documents/eep/tmp/doc
+* Delete all files on local machine /Users/caber/Documents/eep/tmp/pdf
 * Open virtualbox and run windows.
+* Open student-labels-with-macro-for-windows-only.xls
+* Execute macro "GenerateLabelsForSchools".
+* Look at files under /Users/caber/Documents/eep/tmp/doc,pdf
 
 
 
