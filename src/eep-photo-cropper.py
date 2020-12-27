@@ -97,13 +97,16 @@ def rename_file(face_cropper, old_file_name, new_file_name, dir_photos_original,
     # format file name parts
     new_file_name_parts[0] = new_file_name_parts[0].zfill(MAX_DONOR_ID_LEN)
     new_file_name_parts[1] = new_file_name_parts[1].zfill(2)
-    print dir_photos_original
+    print(dir_photos_original)
     # construct new file name
     new_file_name = '-'.join(new_file_name_parts) + old_file_extension.lower()
+    # check if file exists
     new_file_name_count = len(glob.glob(dir_photos_original + '\\' + new_file_name))
-    if new_file_name == old_file_name: #no need to rename current file to the same new file name
+    if new_file_name == old_file_name:
+        # no need to rename current file to the same new file name
         return (donor_id, new_file_name)
-    if new_file_name_count > 0:  # filename exists
+    if new_file_name_count > 0:
+        # filename exists
         new_file_name = '-'.join(new_file_name_parts) + '-' + str(new_file_name_count + 1) + old_file_extension.lower()
 
     #rename original file

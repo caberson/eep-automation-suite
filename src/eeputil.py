@@ -29,7 +29,7 @@ def clean_text(val):
 # create directory if not exists
 def create_dir_if_not_exists(dir):
     if not os.path.exists(dir):
-        print 'Created ' + dir
+        print('Created ' + dir)
         os.makedirs(dir)
 
 # Create required dirs
