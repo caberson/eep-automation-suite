@@ -17,6 +17,7 @@ Quick Start
 Detailed Steps
 ======================
 * pipenv shell
+	If there is error starting pipenv, may need to run `brew resinstall pipenv`
 
 * cd src
 
