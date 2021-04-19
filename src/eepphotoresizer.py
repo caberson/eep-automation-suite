@@ -11,6 +11,8 @@ import shutil
 import argparse
 import util.image
 
+from datetime import datetime
+
 #==============================================================================
 # adds current site-package folder path
 current_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
@@ -20,8 +22,6 @@ if local_site_packages_folder not in sys.path and os.path.exists(local_site_pack
 #==============================================================================
 
 ### local site-packages includes starts
-# from eep import common
-# import clearcubic.utility
 import eepshared
 
 # Windows configs
@@ -67,28 +67,22 @@ def main():
     pass
 
 def get_parser():
-    yr_code = eepshared.build_english_year_code()
-    yr_code = "2020s"
+    default_yr_code = eepshared.build_english_year_code()
 
     if os.name != 'nt':
         # osx 
-        # IMAGE_MAGIC_EXE = 'convert'
-        # default_base_dir = "/Users/cc/Documents/eep/{}/eep_photos_cropped".format(yr_code)
-        default_base_in_dir = "/Users/cc/Documents/eep/{}".format(yr_code)
-        default_base_out_dir = "/Users/cc/Documents/eep/{}".format(yr_code)
-        # default_base_dir = r'C:\Users\cc\Documents\eep\\{}'.format(yr_code)
+        default_base_in_dir = "/Users/cc/Documents/eep/{}".format(default_yr_code)
+        default_base_out_dir = "/Users/cc/Documents/eep/{}".format(default_yr_code)
     else:
         # assume windows
         default_base_in_dir = '\\\\VBOXSVR\cc\Documents\eep',
-        default_base_out_dir = r'C:\Users\cc\Documents\eep\\{}'.format(yr_code)
+        default_base_out_dir = r'C:\Users\cc\Documents\eep\\{}'.format(default_yr_code)
 
 
     src_photos_path = os.path.join(
         # 'C:\projects\eep-automation-suite\data\_to_resize',
-        # default_base_dir,
         default_base_in_dir,
         # '\\\\VBOXSVR\cc\Documents\eep',
-        # yr_code,
         'eep_photos_cropped'
     )
     output_path = os.path.join(
@@ -96,10 +90,28 @@ def get_parser():
         default_base_out_dir,
         'eep_photos_cropped_resized'
     )
+    epilog = """\
+        pipenv run src/eepphotoresizer.py -p ~/Documents/eep/tmp/photos -o ~/Documents/eep/2020f/eep_photos_cropped
+        """
 
-    parser = argparse.ArgumentParser(description='Resize EEP donor photos.')
+    parser = argparse.ArgumentParser(description='Resize EEP donor photos.', epilog=epilog)
+    # parser.add_argument(
+    #     '-y',
+    #     '--year',
+    #     nargs='?',
+    #     type=int,
+    #     default=datetime.today().year
+    # )
+    # parser.add_argument(
+    #     '-m',
+    #     '--month',
+    #     nargs='?',
+    #     type=int,
+    #     default=datetime.today().month
+    # )
     parser.add_argument('-p', nargs='?', default=src_photos_path)
     parser.add_argument('-o', nargs='?', default=output_path)
+
     return parser
 
 def resize_on_windows():
@@ -121,20 +133,20 @@ def resize_on_windows():
         default_base_dir,
         'eep_photos_cropped'
     )
-    # DEFAULT_OUTPUT_PATH = os.path.join(
-    #     'c:\projects\eep-automation-suite\data\2018s\eep_photos_cropped',
-    #     ''
-    # )
 
     parser = get_parser()
     args, unknown = parser.parse_known_args()
-    print(args.p, args.o)
-    resize_photos_for_donor_doc(args.p, args.o)
+    print(args)
+    print(args.p, args.o, args.y, args.m)
+
+    if args.y or args.m:
+        print("Specif...")
+    # resize_photos_for_donor_doc(args.p, args.o)
 
 def resize_on_osx():
     parser = get_parser()
     args, unknown = parser.parse_known_args()
-    print(args.p, args.o)
+    print(args)
     resize_photos_for_donor_doc(args.p, args.o)
 
 if __name__ == '__main__':
