@@ -10,7 +10,7 @@ import cv2
 import glob
 import shutil
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 #==============================================================================
@@ -297,14 +297,14 @@ def setup_argparse():
         '--year',
         nargs = '?',
         type = int,
-        default = datetime.today().year
+        default = (datetime.today() - timedelta(days=365)).year
     )
     parser.add_argument(
         '-m',
         '--month',
         nargs = '?',
         type = int,
-        default = datetime.today().month
+        default = (datetime.today() - timedelta(days=30*6)).month
     )
 
     return parser
