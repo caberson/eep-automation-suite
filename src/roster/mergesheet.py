@@ -362,10 +362,8 @@ def get_sheetnames(raw_excel_file):
         print('src xls: {}'.format(raw_excel_file))
         sheet_names = wb_eep.sheet_names()
         return sheet_names
-        # for i, name in enumerate(sheet_names):
-        #     print('{} {}'.format(i, name.strip().encode('utf-8')))
-    except:
-        print('Excel file not found: {}'.format(raw_excel_file))
+    except Exception as err:
+        print('Error opening Excel file: {}.  Error: {}'.format(raw_excel_file, err))
         pass
    
 def print_sheetnames(raw_excel_file):
