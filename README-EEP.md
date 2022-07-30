@@ -71,6 +71,7 @@ Detailed Steps
 
 
 Open up word-tools/student-labels.doc to generate label files.
+NOTE: As of 2021, there's a newer + quicker way to generate these Word files.  Please see 5-new below.
 NOTE: Use BiauKaiTee if possible.
 5. Use WORD older version. Use student-name-labels.docx to create student labels.  Avery US Letter 5164/8164 label template
 	 - Filter by schl_na_len
@@ -95,6 +96,14 @@ NOTE: Use BiauKaiTee if possible.
 	- 13 / 18 (none after 2019)
 
 May have to print to PDF for all files so format remains the same when printed at EEP office.
+
+5-new.  Use student-name-labels-w-macros-for-window-only.doc in virtual windows env.
+	
+	* Clear all files in /Users/cc/Documents/eep/tmp/{doc,pdf}
+	* Set data to new season's Excel list.
+	* Click on "Start Mailmerge" once
+	*
+	* Click on "developer" menu option, "Macros", run "GenerateLabelsForSchools"
 
 6. Print volunteer list.  Use eep/templates/volunteer-name-tags.docx.  Remember to point to the right donor file in the corresponding year.
 

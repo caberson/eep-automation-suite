@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # coding=utf-8
 # -*- coding: utf-8 -*-
 # Copyright (C) 2012 Caber Chu
@@ -68,6 +68,7 @@ def main():
 
 def get_parser():
     default_yr_code = eepshared.build_english_year_code()
+    yr_code = eepshared.build_english_year_code()
 
     if os.name != 'nt':
         # osx 
@@ -81,12 +82,12 @@ def get_parser():
 
     src_photos_path = os.path.join(
         # 'C:\projects\eep-automation-suite\data\_to_resize',
+        # default_base_dir,
         default_base_in_dir,
         # '\\\\VBOXSVR\cc\Documents\eep',
         'eep_photos_cropped'
     )
     output_path = os.path.join(
-        # 'C:\projects\eep-automation-suite\data\\2017f\eep_photos_cropped',
         default_base_out_dir,
         'eep_photos_cropped_resized'
     )
@@ -109,9 +110,8 @@ def get_parser():
     #     type=int,
     #     default=datetime.today().month
     # )
-    parser.add_argument('-p', nargs='?', default=src_photos_path)
-    parser.add_argument('-o', nargs='?', default=output_path)
-
+    parser.add_argument('-p', nargs='?', default=src_photos_path, help=f"sourc photos default: {src_photos_path}")
+    parser.add_argument('-o', nargs='?', default=output_path, help=f"photos output folder (default: {output_path})")
     return parser
 
 def resize_on_windows():
@@ -150,4 +150,7 @@ def resize_on_osx():
     resize_photos_for_donor_doc(args.p, args.o)
 
 if __name__ == '__main__':
-    resize_on_osx()
+    if os.name != 'nt':
+        resize_on_osx()
+    else:
+        resize_on_windows()
