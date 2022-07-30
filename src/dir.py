@@ -23,11 +23,11 @@ DIR_OUTPUT = path.join(DIR_APP, 'output')
 
 
 def get_config(config_file=None):
-    import ConfigParser
+    import configparser
     if not config_file:
         CONFIG_NAME = 'eep.cfg'
         config_file = path.join(os.getcwd(), 'etc', CONFIG_NAME)
 
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.ConfigParser()
     config.read(config_file)
     return config

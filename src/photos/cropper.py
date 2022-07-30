@@ -1,8 +1,9 @@
 import glob, os, sys, re, fnmatch
 import cv2
 import cv2 as cv
+import math
 
-from commonphotocropper import draw_str
+from .commonphotocropper import draw_str
 import inspect
 
 class FaceCropper:
@@ -40,10 +41,10 @@ class FaceCropper:
         # '..', 'lib',  "opencv", "data", "haarcascades"
         cv2.__path__[0], "data"
     ) # 'D:\_cc\portables\PortablePython2.7/opencv/data/haarcascades/'
-    print opencvHaarCascadePath
+    print(opencvHaarCascadePath)
     cascade_fn = os.path.join(opencvHaarCascadePath, "haarcascade_frontalface_alt.xml")
     # cascade_fn = os.path.join("haarcascade_frontalface_alt.xml")
-    print cascade_fn
+    print(cascade_fn)
     cascade = cv2.CascadeClassifier(cascade_fn)
 
     def __init__(self, dir_photos_original, dir_photos_cropped, image_magic_exe=None):
@@ -54,7 +55,7 @@ class FaceCropper:
         self.resize_image = True
         if image_magic_exe is None:
             self.resize_image = False
-            print 'Warning: ImageMagicExe not set.  Thumbnail resize will not be done'
+            print('Warning: ImageMagicExe not set.  Thumbnail resize will not be done')
 
         self.get_image_list_from_directory()
 
@@ -90,6 +91,10 @@ class FaceCropper:
 
     def draw_rect(self, img, rect, color):
         x1, y1, x2, y2 = rect
+        x1 = math.trunc(x1)
+        y1 = math.trunc(y1)
+        x2 = math.trunc(x2)
+        y2 = math.trunc(y2)
         cv2.rectangle(img, (x1, y1), (x2, y2), color, 1)
 
     def get_cropped_rect(self, img, rect=None, x_conversion_factor=1.0):#rect = face rectangle
@@ -190,10 +195,10 @@ class FaceCropper:
         msg = 'Saving: %s' % os.path.join(self.dir_photos_cropped, file_base_name)
         if not override and os.path.exists(cropped_file):
             msg += '.  File exists.  Override setting: No.'
-            print msg
+            print(msg)
             return
         else:
-            print msg
+            print(msg)
 
         currentImageH, currentImageW, currentImageD = self.current_image.shape
         currentThumbImageH, currentThumbImageW, currentThumbImageD = self.current_thumbnail.shape
@@ -219,7 +224,7 @@ class FaceCropper:
         #cv2.imwrite(photosCroppedDir + croppedFileName, crop_vio_roi)
         cv2.imwrite(cropped_file, cropped_n_resized_vio_roi)
 
-        print 'Saving Cropped Image.'
+        print('Saving Cropped Image.')
 
         self.resize_img(cropped_file)
     
@@ -235,7 +240,7 @@ class FaceCropper:
     def test_image(self, img):
         import numpy
         capture = cv.fromarray(img, True)
-        print cv.GetDims(capture)
+        print(cv.GetDims(capture))
 
         #masked_image = cv.CreateImage(cv.GetSize(capture), 8, 3)
         #print img
@@ -305,17 +310,17 @@ class FaceCropper:
         pathToOriginalFileForDelete = os.path.join(self.dir_photos_original, file_name)
         pathToThumbnailFileForDelete = os.path.join(self.dir_photos_cropped, file_name)
 
-        print 'Deleting\n\rOriginal > ', pathToOriginalFileForDelete, '\n\rThumbnail > ', pathToThumbnailFileForDelete
+        print('Deleting\n\rOriginal > ', pathToOriginalFileForDelete, '\n\rThumbnail > ', pathToThumbnailFileForDelete)
 
         try:
             os.unlink(pathToOriginalFileForDelete)
         except:
-            print 'Error deleting original file'
+            print('Error deleting original file')
 
         try:
             os.unlink(pathToThumbnailFileForDelete)
         except:
-            print 'Error deleting cropped file'
+            print('Error deleting cropped file')
 
         del self.original_photos[self.current_view_position]
 

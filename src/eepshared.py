@@ -101,12 +101,12 @@ def build_chinese_year_code_short(year=None, month=None):
     return build_chinese_year_code(year, month)
 
 def get_config(config_file=None):
-    import ConfigParser
+    import configparser
     if not config_file:
         CONFIG_NAME = 'eep.cfg'
         config_file = os.path.join(os.getcwd(), 'etc', CONFIG_NAME)
 
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.ConfigParser()
     config.read(config_file)
     return config
 

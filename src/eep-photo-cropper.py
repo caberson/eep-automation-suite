@@ -119,11 +119,11 @@ def rename_file(face_cropper, old_file_name, new_file_name, dir_photos_original,
             shutil.move(old_file, new_file)
             face_cropper.set_current_file_name_to(new_file)
         else:
-            print 'Not renamed.  File name already exists.'
+            print('Not renamed.  File name already exists.')
 
         # print 'Renamed original file from ', old_file, ' to ', new_file_name
     except Exception as e:
-        print e, ' Can not rename original file: ', old_file, ' to ', new_file
+        print(e, ' Can not rename original file: ', old_file, ' to ', new_file)
 
     # rename cropped file
     try:
@@ -134,7 +134,7 @@ def rename_file(face_cropper, old_file_name, new_file_name, dir_photos_original,
 
         # print 'Renaming cropped file from ', old_file_name, ' to ', new_file_name
     except Exception as e:
-        print e, ' Can not rename cropped file: ', cropped_file_name, ' to ', new_cropped_file_name
+        print(e, ' Can not rename cropped file: ', cropped_file_name, ' to ', new_cropped_file_name)
 
     return (donor_id, new_file_name)
 
@@ -177,8 +177,8 @@ def start_main_loop(face_cropper):
 
         if KEY_PRESS_DEBUG and key_pressed > -1:
             res = key_pressed
-            print 'You pressed %d (0x%x), LSB: %d (%s)' % (res, res, res % 256,
-repr(chr(res%256)) if res%256 < 128 else '?')
+            print('You pressed %d (0x%x), LSB: %d (%s)' % (res, res, res % 256,
+repr(chr(res%256)) if res%256 < 128 else '?'))
         # pass
 
         #=========================================
@@ -214,17 +214,17 @@ repr(chr(res%256)) if res%256 < 128 else '?')
                 face_cropper.dir_photos_original,
                 face_cropper.dir_photos_cropped
             )
-            print 'New File: %s' % new_file_name
+            print('New File: %s' % new_file_name)
             if int(donor_id) > 0:
                 last_donor_id = donor_id
             new_file_name = ""
-            print "Last donor ID: %s" % last_donor_id
+            print("Last donor ID: %s" % last_donor_id)
 
             if IS_FILE_BROWSING_MODE:
                 try:
                     show_photo(face_cropper.get_next_photo())
                 except Exception as e:
-                    print e
+                    print(e)
                     break
             else: # refresh current photo
                 show_photo(face_cropper.get_current_photo())
@@ -278,14 +278,14 @@ def compare_files():
         if bFound == 0:
             file_base_name = os.path.basename(src_f)
             shutil.copyfile(src_f, output_dir + '\\' + file_base_name)
-            print 'Source File Not matched:', src_f
+            print('Source File Not matched:', src_f)
 
 
 def usage():
-    print """Usage:
+    print("""Usage:
             --noinitdir No creating dir
             --photodir= Original photo dir
-            """
+            """)
 
 def setup_argparse():
     import argparse
@@ -297,7 +297,7 @@ def setup_argparse():
         '--year',
         nargs = '?',
         type = int,
-        default = (datetime.today() - timedelta(days=365)).year
+        default = (datetime.today() - timedelta(days=0)).year
     )
     parser.add_argument(
         '-m',
@@ -332,7 +332,7 @@ def main(argv):
         if os.path.isdir(photodir):
             OPTION_DIR_EEP_PHOTOS_ORIGINAL = photodir
         else:
-            print "Invalid photodir specified: {}".format(photodir)
+            print("Invalid photodir specified: {}".format(photodir))
             sys.exit(2)
         
     # instantiate a cropper object
@@ -352,12 +352,12 @@ def main(argv):
     # If no files, exit program
     if len(face_cropper.original_photos) == 0:
         # print DIR_EEP_PHOTOS_ORIGINAL_DEFAULT
-        print 'No photos to crop'
+        print('No photos to crop')
         sys.exit()
 
     start_main_loop(face_cropper)
 
-    print 'Exiting'
+    print('Exiting')
     exit()
 
 
