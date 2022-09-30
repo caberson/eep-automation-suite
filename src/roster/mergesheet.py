@@ -338,7 +338,7 @@ def check_graduation_year(sheet, rownum):
 
     if yr == '':
         return STATUS_WARNING
-    elif unicode(current_year) in unicode(yr):
+    elif str(current_year) in str(yr):
         return STATUS_WARNING
     elif yr < current_year:
         return STATUS_ERROR
@@ -370,7 +370,7 @@ def print_sheetnames(raw_excel_file):
     """Print sheet index number and it's name."""
     sheet_names = get_sheetnames(raw_excel_file)
     for i, name in enumerate(sheet_names):
-        print('{} {}'.format(i, name.strip().encode('utf-8')))
+        print('{} {}'.format(i, name.strip()))
 
 def find_latest_sheet_ids(raw_excel_file):
     sheet_names = get_sheetnames(raw_excel_file)

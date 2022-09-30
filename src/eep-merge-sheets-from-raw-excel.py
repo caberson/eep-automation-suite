@@ -81,7 +81,7 @@ def main():
 
         # Try to find latest sheet ids
         found_sheetnums = roster.mergesheet.find_latest_sheet_ids(raw_excel_file)
-        use_found = raw_input('Use found sheetnums: {} (y/n)? '.format(found_sheetnums))
+        use_found = input('Use found sheetnums: {} (y/n)? '.format(found_sheetnums))
         if use_found.strip().lower() == 'y':
             args.sheetnums = found_sheetnums
         else:

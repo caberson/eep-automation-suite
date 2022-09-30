@@ -151,12 +151,12 @@ class EepLists:
                 excel_file_name, on_demand=True, formatting_info=True
             )
         except:
-            print 'Source Excel File {} not found.'.format(excel_file_name)
+            print('Source Excel File {} not found.'.format(excel_file_name))
             sys.exit()
 
         self.raw_data_sheet = self.raw_data_wb.sheet_by_index(0)
         self.data_sheet_row_hi = self.raw_data_sheet.nrows
-        print "EXCEL EEP ROWS: ", self.data_sheet_row_hi
+        print("EXCEL EEP ROWS: ", self.data_sheet_row_hi)
 
     def open_workbook(self, file_name):
         return xlrd.open_workbook(
@@ -198,8 +198,8 @@ class EepLists:
 
         sh_masterlist.set_header_margin(0)
         sh_masterlist.set_footer_margin(0)
-        sh_masterlist.set_header_str("")
-        sh_masterlist.set_footer_str("")
+        sh_masterlist.set_header_str("".encode())
+        sh_masterlist.set_footer_str("".encode())
         sh_masterlist.set_top_margin(0.25)
         sh_masterlist.set_left_margin(0.27)
         sh_masterlist.set_right_margin(.25)
@@ -267,7 +267,7 @@ class EepLists:
         """
         taiwan_name_maps = [u'臺灣', u'台灣']
         actual_row_count = 0
-        sheet_range = xrange(self.data_sheet_row_lo, self.data_sheet_row_hi)
+        sheet_range = range(self.data_sheet_row_lo, self.data_sheet_row_hi)
         sheet = self.data_sheet
         name_columns = [
             sheet.colpos['student_name']
@@ -343,7 +343,7 @@ class EepLists:
         last_school = sheet.get_school(section_begin_row_num + 1)
         school_count = 0
         current_row_count = 0
-        for i in xrange(self.src_heading_rows, excel_row_hi):
+        for i in range(self.src_heading_rows, excel_row_hi):
             current_school = sheet.get_school(i)
 
             # If there are more rows, check for school change.
@@ -357,7 +357,7 @@ class EepLists:
                 # School is going to change or this is the last row.
                 school_count += 1
                 print('Process school #{} {} @ {}-{}'.format(
-                    school_count, current_school.encode('utf-8'),
+                    school_count, current_school,
                     section_begin_row_num, i
                 ))
 
@@ -379,7 +379,7 @@ class EepLists:
         current_row_count = 0
 
         unique_schools = []
-        for i in xrange(self.src_heading_rows, excel_row_hi):
+        for i in range(self.src_heading_rows, excel_row_hi):
             r = sheet.get_row(i)
             country = r[0].value
             region = r[1].value
@@ -400,7 +400,7 @@ class EepLists:
                 # School is going to change or this is the last row.
                 school_count += 1
                 print('Process school #{} {} @ {}-{}'.format(
-                    school_count, current_school.encode('utf-8'),
+                    school_count, current_school,
                     section_begin_row_num, i
                 ))
 
@@ -505,8 +505,8 @@ class EepLists:
 
         sh_new.set_header_margin(0)
         sh_new.set_footer_margin(0)
-        sh_new.set_header_str("")
-        sh_new.set_footer_str("")
+        sh_new.set_header_str("".encode())
+        sh_new.set_footer_str("".encode())
         sh_new.set_top_margin(0.30)
         sh_new.set_left_margin(0.25)
         sh_new.set_right_margin(0.25)
@@ -659,8 +659,8 @@ class EepLists:
 
         sh_new.set_header_margin(0)
         sh_new.set_footer_margin(0)
-        sh_new.set_header_str("")
-        sh_new.set_footer_str("")
+        sh_new.set_header_str("".encode())
+        sh_new.set_footer_str("".encode())
         sh_new.set_top_margin(0.30)
         sh_new.set_left_margin(0.25)
         sh_new.set_right_margin(0.25)
@@ -802,8 +802,8 @@ class EepLists:
 
         sh_new.set_header_margin(0)
         sh_new.set_footer_margin(0)
-        sh_new.set_header_str("")
-        sh_new.set_footer_str("")
+        sh_new.set_header_str("".encode())
+        sh_new.set_footer_str("".encode())
         sh_new.set_top_margin(0.30)
         sh_new.set_left_margin(0.25)
         sh_new.set_right_margin(0.25)
@@ -949,8 +949,8 @@ class EepLists:
         # sh_new.portrait = 0
         sh_new.set_header_margin(0)
         sh_new.set_footer_margin(0)
-        sh_new.set_header_str("")
-        sh_new.set_footer_str("")
+        sh_new.set_header_str("".encode())
+        sh_new.set_footer_str("".encode())
         sh_new.set_top_margin(0.30)
         sh_new.set_left_margin(0.25)
         sh_new.set_right_margin(0.25)
@@ -1091,7 +1091,7 @@ def generate_xmldata():
         cps["school_name_length"],
     ]
 
-    for current_row_count, rx in enumerate(xrange(excel_row_lo, excel_row_hi)): #sh.nrows
+    for current_row_count, rx in enumerate(range(excel_row_lo, excel_row_hi)): #sh.nrows
         current_xlrd_excel_row_num = current_row_count + SRC_HEADING_ROWS
         current_xlwt_excel_row_num = current_row_count + 1
 
@@ -1104,14 +1104,14 @@ def generate_xmldata():
 
             #print cell_val,
             tmpNode = root.createElement(field_name)
-            tmpNode.appendChild(root.createTextNode(unicode(cell_val)))
+            tmpNode.appendChild(root.createTextNode(cell_val))
             student.appendChild(tmpNode)
 
     # Save the file
     f = open(os.path.join(
         eepshared.INSPECTION_DOCUMENTS_DESTINATION_DIR,
         'EEPStudents.xml', 'w'
-    )).write(root.toxml().encode('UTF-8'))
+    )).write(root.toxml())
 
 def get_argparse():
     """Get cmd line argument parser."""

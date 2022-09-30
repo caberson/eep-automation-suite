@@ -16,7 +16,7 @@ def sort(raw_excel_file, sheet_index=0):
 			raw_excel_file, on_demand=True, formatting_info=True
 		)
 	except:
-		print "Error opening file ", raw_excel_file
+		print("Error opening file ", raw_excel_file)
 		return
 
 	src_sheet = wb_eep.sheet_by_index(sheet_index)

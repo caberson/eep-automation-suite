@@ -53,15 +53,15 @@ class EepSheet:
                         excel_row_hi = rownum
                         break
                 except:
-                    print 'Error occured trying to get sheet_row_hi'
+                    print('Error occured trying to get sheet_row_hi')
                     break
         except:
             excel_row_hi = rownum
 
-        print 'Last Excel row for sheet {}: {}'.format(
-            sheet.name.encode('utf-8'),
+        print('Last Excel row for sheet {}: {}'.format(
+            sheet.name,
             excel_row_hi
-        )
+        ))
 
         return excel_row_hi
 
